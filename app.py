@@ -535,6 +535,14 @@ def get_word_info(word):
             f"Study Tip: Try to find the word '{word}' in a sentence online!"
         ]
 
+# --- ADD THIS HELPER FUNCTION ---
+def get_tts_audio(word):
+    """Converts word to audio bytes and encodes to base64 for Streamlit."""
+    tts = gTTS(text=word, lang='en')
+    fp = BytesIO()
+    tts.write_to_fp(fp)
+    return base64.b64encode(fp.getvalue()).decode()
+
 # --- 3. STREAMLIT APP LOGIC ---
 
 # Initialize session state variables if they don't exist
