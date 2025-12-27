@@ -31,7 +31,7 @@ POOL_ONE = [
 # Two Bee & Three Bee Pools (truncated for brevity)
 POOL_TWO = [
         "hesitate", "scorcher", "scavenger", "fragments", "deflated", "unleash", "ration", "cosmetics", "crawdad", 
-        "frustration", "unruly", "mascot", "aroma", "moustache", "buffalo", "sequins", "gallop", "fabulous", "lanky", 
+        "frustration", "unruly", "mascot", "aroma", "moustache", "artifacts", "buffalo", "sequins", "gallop", "fabulous", "lanky", 
         "fluently", "mysterious", "brandished", "sardines", "anguish", "conical", "rickety", "lilt", "pediatric", 
         "porridge", "democracy", "rummage", "beige", "ancestral", "grimace", "gaunt", "enormous", "geranium", 
         "nautical", "dubious", "ebony", "foreign", "paltry", "verdict", "garbled", "encourages", "imitation", 
@@ -63,7 +63,7 @@ POOL_THREE = [
         "oswego", "diphtheria", "baklava", "anonymously", "concierge", "paparazzi", "corbels", "unparalleled", 
         "latticework", "pumpernickel", "trebuchets", "barrette", "hibiscus", "pogrom", "kilimanjaro", "chassis", "tamale", 
         "bursitis", "junket", "maracas", "protégé", "quandary", "gyroplane", "cycads", "gingham", "adriatic", 
-        "silhouette", "piccolo", "cannelloni", "auxiliary", "thesaurus", "tulle", "bronchitis"
+        "silhouette", "piccolo", "cannelloni", "auxiliary", "thesaurus", "tulle", "bronchitis", "Charolais"
     ]
 
 # --- 2. MASTER DICTIONARY ---
@@ -406,6 +406,7 @@ WORD_DATA = {
     "safari": ["An expedition to observe or hunt animals in their natural habitat.", "They went on a safari in Africa to see lions and elephants."],
     "salvaged": ["Rescued from potential loss or destruction.", "They salvaged several items from the old house before it was torn down."],
     "samosas": ["Fried or baked pastries with a savory filling.", "We ordered a plate of spicy vegetable samosas."],
+    "serape": ["A colorful woolen shawl or blanket worn in Mexico.", "The musician wore a traditional serape over his shoulders."],
     "sarape": ["A colorful woolen shawl or blanket worn in Mexico.", "The musician wore a traditional sarape over his shoulders."],
     "sardines": ["Small, silvery food fish related to the herring.", "He opened a tin of sardines for his lunch."],
     "sarsaparilla": ["A carbonated soft drink flavored with the root of a plant.", "He ordered a cold glass of sarsaparilla at the cafe."],
