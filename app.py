@@ -45,7 +45,7 @@ POOL_TWO = [
         "convulsively", "courier", "garishly", "psyche", "everest", "stucco", "dexterity", "frankenstein", "cavorting", 
         "schema", "marauder", "conscience", "vidimus", "battlements", "delphine", "deferential", "slough", "albatross", 
         "archipelago", "khaki", "serape", "opalescent", "asphalt", "puissance", "pinioning"
-    ],
+    ]
 
 POOL_THREE = [
         "gangly", "comrades", "ultimatum", "swaggering", "sporadic", "whinnying", "prototype", "cravenly", "chimneys", 
