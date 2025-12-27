@@ -534,77 +534,130 @@ def get_word_info(word):
             f"Definition currently being updated in the Bee database for '{word}'.", 
             f"Study Tip: Try to find the word '{word}' in a sentence online!"
         ]
+
 # --- 3. STREAMLIT APP LOGIC ---
-st.set_page_config(page_title="Scripps Spelling Bee Practice", page_icon="🐝")
-st.title("🐝 National Spelling Bee Trainer")
 
-# 
-
+# Initialize session state variables if they don't exist
 if 'game_active' not in st.session_state:
     st.session_state.game_active = False
     st.session_state.round = 0
     st.session_state.score = 0
     st.session_state.wrong_list = []
     st.session_state.current_pool = []
+    st.session_state.mode = "Challenge (Test)"
 
-# --- MODE SELECTION ---
+# --- SCREEN 1: SELECTION MENU ---
 if not st.session_state.game_active:
-    st.subheader("Select Your Challenge")
-    mode = st.radio("Difficulty Level:", [
+    st.header("🐝 Scripps Spelling Bee Trainer")
+    st.subheader("Select Your Path")
+    
+    # Choose between testing and learning
+    mode_type = st.radio("Choose Activity:", ["Challenge (Test)", "Study (Learning)"])
+    
+    # Difficulty selection
+    level = st.selectbox("Select Word Pool:", [
         "3rd Grader Classroom Bee (50 words)", 
         "School Bee: One Bee (150 words)", 
         "School Bee: Two Bee", 
         "School Bee: Three Bee"
     ])
     
-    if st.button("Start Game"):
-        if "3rd Grader" in mode:
-            st.session_state.current_pool = random.sample(POOL_3RD, 20)
-        elif "One Bee" in mode:
-            st.session_state.current_pool = random.sample(POOL_ONE, 20)
-        elif "Two Bee" in mode:
-            st.session_state.current_pool = random.sample(POOL_TWO, 10)
+    if st.button("Begin Session"):
+        # 1. Select the correct pool based on user choice
+        if "3rd Grader" in level:
+            selected_pool = POOL_3RD
+        elif "One Bee" in level:
+            selected_pool = POOL_ONE
+        elif "Two Bee" in level:
+            selected_pool = POOL_TWO
         else:
-            st.session_state.current_pool = random.sample(POOL_THREE, 10)
+            selected_pool = POOL_THREE
             
+        # 2. Set up the word list for this session
+        if mode_type == "Challenge (Test)":
+            # For testing, we take a random sample of 20
+            st.session_state.current_pool = random.sample(selected_pool, min(20, len(selected_pool)))
+        else:
+            # For study, we show the full list in order
+            st.session_state.current_pool = selected_pool
+            
+        st.session_state.mode = mode_type
         st.session_state.game_active = True
         st.session_state.round = 0
         st.session_state.score = 0
         st.session_state.wrong_list = []
         st.rerun()
 
-# --- GAME INTERFACE ---
+# --- SCREEN 2: ACTIVE SESSION ---
 else:
     pool = st.session_state.current_pool
+    
     if st.session_state.round < len(pool):
-        target = pool[st.session_state.round]
-        st.write(f"### Word {st.session_state.round + 1} of {len(pool)}")
+        current_word = pool[st.session_state.round]
         
-        # Audio Player
-        tts = gTTS(text=target, lang='en')
-        fp = BytesIO()
-        tts.write_to_fp(fp)
-        b64 = base64.b64encode(fp.getvalue()).decode()
-        st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64}">', unsafe_allow_html=True)
-        
-        # 
-
-        user_ans = st.text_input("Spelling:", key=f"q_{st.session_state.round}").strip().lower()
-        if st.button("Submit"):
-            if user_ans == target.lower():
-                st.success("Correct!")
-                st.session_state.score += 1
-            else:
-                st.error(f"Incorrect. The word was: {target}")
-                st.session_state.wrong_list.append(target)
-            st.session_state.round += 1
-            st.rerun()
+        # --- BRANCH A: STUDY MODE ---
+        if st.session_state.mode == "Study (Learning)":
+            st.header("📖 Study Mode")
+            info = get_word_info(current_word) # Retrieves meaning and example
             
-    # --- RESULTS PAGE ---
+            st.divider()
+            st.title(current_word.capitalize())
+            
+            # Auto-play audio pronunciation
+            # (Assumes get_tts_audio is your helper function using gTTS)
+            b64_audio = get_tts_audio(current_word) 
+            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
+            
+            if st.button("🔊 Re-play Pronunciation"):
+                st.rerun()
+
+            st.info(f"**Meaning:** {info[0]}")
+            st.success(f"**Sample Sentence:** *{info[1]}*")
+
+            # Navigation buttons
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                if st.button("⬅️ Previous") and st.session_state.round > 0:
+                    st.session_state.round -= 1
+                    st.rerun()
+            with col2:
+                if st.button("Next ➡️"):
+                    st.session_state.round += 1
+                    st.rerun()
+            with col3:
+                if st.button("Quit Study"):
+                    st.session_state.game_active = False
+                    st.rerun()
+
+        # --- BRANCH B: CHALLENGE MODE ---
+        else:
+            st.header("✍️ Spelling Challenge")
+            st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
+            
+            # Play audio automatically
+            b64_audio = get_tts_audio(current_word)
+            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
+            
+            user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
+            
+            if st.button("Submit Spelling"):
+                if user_ans == current_word.lower().strip().replace("*", ""):
+                    st.success("Correct!")
+                    st.session_state.score += 1
+                else:
+                    st.error(f"Incorrect. The correct spelling was: {current_word}")
+                    st.session_state.wrong_list.append(current_word)
+                
+                st.session_state.round += 1
+                st.rerun()
+
+    # --- SCREEN 3: RESULTS / SUMMARY ---
     else:
         st.balloons()
-        st.header("Great Work!")
-        st.metric("Final Score", f"{st.session_state.score} / {len(pool)}")
+        st.header("Session Complete!")
+        
+        if st.session_state.mode == "Challenge (Test)":
+            st.metric("Final Score", f"{st.session_state.score} / {len(pool)}")
         
         if st.session_state.wrong_list:
             st.subheader("Words to Review")
@@ -614,6 +667,6 @@ else:
                     st.write(f"**Meaning:** {info[0]}")
                     st.write(f"**Example:** *{info[1]}*")
         
-        if st.button("New Game"):
+        if st.button("Return to Main Menu"):
             st.session_state.game_active = False
             st.rerun()
