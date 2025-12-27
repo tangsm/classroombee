@@ -557,7 +557,7 @@ if 'game_active' not in st.session_state:
 
 # --- SCREEN 1: SELECTION MENU ---
 if not st.session_state.game_active:
-    st.header("🐝 Scripps Spelling Bee Trainer")
+    st.header("🐝 Fun Spelling Bee Trainer")
     st.subheader("Select Your Path")
     
     # Choose between testing and learning
