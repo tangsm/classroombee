@@ -4,167 +4,105 @@ from gtts import gTTS
 import base64
 from io import BytesIO
 
-# --- 1. OFFICIAL WORD DATA (MEANINGS & EXAMPLES) ---
-# I have populated this with official Scripps 2025-2026 data.
-WORD_DATA = {
-    # One Bee / 3rd Grade
-    "unicorn": ["An imaginary animal that has the body of a horse and a single horn in the middle of its head.", "The storybook featured a majestic white unicorn."],
-    "faraway": ["Distant in space or time.", "She dreamed of traveling to faraway planets."],
-    "heater": ["A device that gives off warmth.", "We turned on the electric heater when the temperature dropped."],
-    "pirates": ["Robbers who travel and attack on the high seas.", "The pirates searched the island for buried treasure."],
-    "understand": ["To comprehend or grasp the meaning of something.", "I finally understand how to solve this math problem."],
-    "wooden": ["Made of wood; also can mean lacking grace or being stiff.", "The artisan carved a beautiful wooden bowl."],
-    "leaning": ["Casting one's weight or inclining to one side.", "The tower was leaning slightly toward the north."],
-    "breakfast": ["The first meal of the day.", "We had eggs and toast for breakfast."],
-    "window": ["An opening in a wall or door that usually contains glass.", "Open the window to let in some fresh air."],
-    "acrobat": ["One who performs gymnastic feats or exercises.", "The acrobat performed a daring flip on the high wire."],
-    "message": ["A written or oral communication sent to someone.", "I left a message for my mom on the kitchen counter."],
-    "chocolate": ["A food obtained from roasted cacao beans.", "I love drinking hot chocolate on a cold day."],
-    "forepaw": ["The foot of a four-legged animal on a front leg.", "The cat groomed its forepaw after eating."],
-    "elephant": ["A very large mammal with a trunk and tusks.", "The elephant used its trunk to spray water."],
-    "hedgehog": ["A small nocturnal mammal covered in spines.", "The hedgehog rolled into a ball to protect itself."],
-    "recipe": ["A set of instructions for preparing a dish.", "Follow the recipe closely to make the perfect cake."],
-    "garbage": ["Trash or waste material.", "Don't forget to take the garbage out to the bin."],
-    "surprise": ["Something unexpected or astonishing.", "The party was a complete surprise to everyone."],
-    "mermaid": ["An imaginary sea creature with the upper body of a woman and the tail of a fish.", "The sailor claimed he saw a mermaid on the rocks."],
-    "bombarded": ["Attacked vigorously or persistently.", "The teacher was bombarded with questions about the field trip."],
-    "disability": ["A physical or mental condition that limits movements or activities.", "The school is designed to be accessible for students with a disability."],
-    "incredible": ["Hard to believe; extraordinary.", "The view from the top of the mountain was incredible."],
-    "nervous": ["Fearful of what may be coming; anxious.", "I felt nervous before my first spelling bee."],
-    "raise": ["To lift higher or move to a higher position.", "Please raise your hand if you have a question."],
-    "leather": ["The skin of an animal prepared for use.", "His new jacket is made of soft brown leather."],
-    "peppercorn": ["A dried berry of the pepper plant.", "The chef ground a fresh peppercorn over the salad."],
-    "weather": ["The state of the atmosphere at a place and time.", "The weather today is sunny and warm."],
-    "countess": ["A woman holding the rank of an earl or count.", "The countess lived in a grand castle in the hills."],
-    "cartwheel": ["A sideways handspring with arms and legs extended.", "She performed a perfect cartwheel across the grass."],
-    "zooming": ["Moving very quickly with a humming sound.", "The race cars were zooming past the finish line."],
-    "attacked": ["Began to injure, damage, or harm.", "The castle was attacked by a dragon in the story."],
-    "turnout": ["A gathering of people for a special purpose.", "There was a large turnout for the school play."],
-    "eaten": ["Taken in through the mouth as food.", "All of the apples have been eaten."],
-    "streetlights": ["Lamps mounted on poles along a public road.", "The streetlights came on as the sun went down."],
-    "journey": ["An act of traveling from one place to another.", "The journey across the ocean took several weeks."],
-    "courtyard": ["An open area surrounded by walls or buildings.", "The children played tag in the palace courtyard."],
-    "shouting": ["Speaking or calling out in a loud voice.", "The fans were shouting for their favorite team."],
-    "asleep": ["In a state of sleep; not awake.", "The baby was fast asleep in the crib."],
-    "curious": ["Showing interest in finding out information.", "The curious puppy sniffed the mysterious box."],
-    "dinosaur": ["A member of a group of extinct reptiles.", "The museum has a giant skeleton of a dinosaur."],
-    "brilliant": ["Showing great intelligence or talent.", "The student came up with a brilliant idea for the project."],
-    "vacuum": ["An electrical appliance for cleaning by suction.", "I used the vacuum to clean the living room rug."],
-    "gorgeous": ["Dazzlingly beautiful or attractive.", "The sunset over the ocean was gorgeous."],
-    "monsoon": ["A season of heavy rainfall in certain regions.", "The monsoon brought much-needed rain to the crops."],
-    "dangerous": ["Involving risk or likely to cause harm.", "It is dangerous to walk alone in the dark."],
-    "avocado": ["A pulpy green fruit often called an alligator pear.", "I like to put sliced avocado on my toast."],
-    "valentine": ["A gift or card sent to a sweetheart.", "I gave my best friend a valentine at school."],
-    "February": ["The second month of the year.", "My birthday is in the middle of February."],
-    "formation": ["A group of things arranged in a particular order.", "The geese flew in a V-formation."],
-    "especially": ["Particularly or in a special manner.", "This book is especially good for young readers."],
-    
-    # Two Bee
-    "verdict": ["A decision made by a jury in a court of law.", "The judge read the verdict to the quiet courtroom."],
-    "hesitate": ["To delay or pause for a moment.", "Don't hesitate to ask for help if you need it."],
-    "scorcher": ["A day or period of very hot weather.", "Last Tuesday was a real scorcher."],
-    "fragments": ["Parts that are broken off or incomplete.", "The archaeologists found fragments of ancient pottery."],
-    "serape": ["A colorful woolen shawl or blanket worn in Mexico.", "The musician wore a bright serape during the festival."],
-    "unruly": ["Not easily managed or disciplined.", "The toddler's unruly hair was full of tangles."],
-    "aroma": ["A distinctive, typically pleasant smell.", "The aroma of fresh bread filled the kitchen."],
-    
-    # Three Bee
-    "syndrome": ["A group of symptoms that occur together.", "The doctor explained the rare syndrome to the family."],
-    "promenade": ["A paved public walk, typically one along a waterfront.", "Families enjoyed a sunset stroll along the beach promenade."],
-    "invincible": ["Too powerful to be defeated or overcome.", "The superhero seemed invincible in the movie."],
-    "precocious": ["Having developed certain abilities at an earlier age than usual.", "The precocious child could play the piano at age three."]
+# --- 1. WORD POOLS (EXTRACTED FROM YOUR PDFS) ---
+POOLS = {
+    "3rd Grader": ["unicorn", "faraway", "heater", "pirates", "understand", "wooden", "leaning", "breakfast", "window", "acrobat", "message", "chocolate", "forepaw", "elephant", "hedgehog", "recipe", "garbage", "surprise", "mermaid", "bombarded", "disability", "incredible", "nervous", "raise", "leather", "peppercorn", "weather", "countess", "cartwheel", "zooming", "attacked", "turnout", "eaten", "streetlights", "journey", "courtyard", "shouting", "asleep", "curious", "dinosaur", "brilliant", "vacuum", "gorgeous", "monsoon", "dangerous", "avocado", "valentine", "February", "formation", "especially"],
+    "One Bee": ["tag", "twigs", "insects", "moment", "send", "taffy", "teeth", "ajar", "deck", "comfy", "shortcut", "basil", "stuck", "stretch", "bait", "triple", "snug", "tight", "lure", "satin", "fish", "candy", "cluster", "ahoy", "hold", "scrunch", "forest", "signal", "mind", "ruby", "hollow", "answer", "stay", "close", "spinning", "shuffle", "scrub", "tackle", "baffling", "dollop", "draw", "wire", "sizzling", "minnows", "brown", "skater", "hoist", "silver", "cozy", "giant", "search", "before", "bucket", "remind", "circus", "tint", "chance", "mango", "writing", "milk", "baskets", "coral", "kitchen", "yawn", "tender", "jangle", "sugar", "tank", "paste", "shimmer", "awkward", "want", "melon", "blossoms", "seep", "crowd", "farmer", "swampy", "sweet", "pond", "parent", "studded", "wheels", "skirt", "tail", "focus", "faint", "sharks", "hockey", "distress", "fruit", "quilt", "slime", "lessons", "roam", "goats"],
+    "Two Bee": ["hesitate", "buffalo", "dubious", "dissolving", "scorcher", "sequins", "ebony", "nomad", "scavenger", "fragments", "gallop", "fabulous", "foreign", "billowed", "paltry", "skewer", "deflated", "lanky", "verdict", "berlin", "unleash", "fluently", "garbled", "lunacy", "ration", "mysterious", "encourages", "conjure", "cosmetics", "brandished", "imitation", "bracken", "crawdad", "sardines", "miniature", "noggin", "frustration", "anguish", "receptionist", "neon", "unruly", "conical", "preamble", "rakish", "mascot", "rickety", "plausible", "hypnosis", "aroma", "lilt", "reprimanding", "rotunda", "moustache", "pediatric", "commotion", "gusto", "porridge", "oblivion", "toiletries", "artifacts", "democracy", "immigrants", "gleaned", "rummage", "steeple", "jeered", "perfume", "beige", "spectators", "winsome", "sinister", "ancestral", "lanyards", "prattling", "tuxedo", "grimace", "suspicious", "galore", "discoveries", "gaunt", "parchment", "emporium", "lurches", "enormous", "ramshackle", "atrium", "language", "geranium", "fugitive", "eccentric", "prognosis", "nautical", "heron", "savant", "almanac", "talcum", "hippies", "samosas", "tranquilizer", "equestrian", "chignon", "pheromone", "campaign", "plaited", "galleon", "magnanimous", "pistachio", "monsieur", "chartreuse", "mosque", "manticores", "wainscoting", "zombielike", "prestigious", "nehru", "warlock", "fraidycat", "colossus", "guttural", "convulsively", "courier", "garishly", "psyche", "everest", "stucco", "dexterity", "frankenstein", "cavorting", "schema", "marauder", "conscience", "vidimus", "battlements", "delphine", "deferential", "slough", "albatross", "archipelago", "khaki", "serape", "opalescent", "asphalt", "puissance", "pinioning"],
+    "Three Bee": ["gangly", "comrades", "ultimatum", "swaggering", "sporadic", "whinnying", "prototype", "cravenly", "chimneys", "promenade", "squalor", "mulberry", "riveted", "repugnant", "memoirs", "hypocritical", "plaid", "invincible", "cylinders", "chlorine", "dirge", "renowned", "ominous", "traumatic", "zeal", "parachute", "muffler", "receipts", "whittled", "laborious", "syndrome", "solemnly", "depots", "appointment", "premises", "begrudge", "fiberglass", "foreseeable", "safari", "contentious", "salvaged", "ratify", "lasagna", "precocious", "fissures", "scalpel", "substantially", "ensemble", "enthusiastic", "reclusive", "mercantile", "cadre", "discipline", "compassionate", "formidable", "lye", "unfamiliar", "bulletin", "propaganda", "belfry", "scurrying", "alfalfa", "marquee", "lacrosse", "dignitaries", "officially", "proficient", "sluice", "pizzeria", "crematorium", "compunction", "cajolery", "dismissal", "bayonet", "emphatically", "vigilance", "skittish", "amicable", "hyperventilated", "residuals", "careened", "exuberant", "ostracism", "boutique", "nomination", "beautician", "onslaught", "peroxide", "opportunist", "equations", "ruefully", "aristocracy", "dictatorship", "assignment", "misanthrope", "apocalypse", "tuberculosis", "patriarchs", "barricade", "chandelier", "camphor", "confreres", "dulce", "tucson", "oswego", "diphtheria", "baklava", "anonymously", "concierge", "paparazzi", "corbels", "unparalleled", "latticework", "pumpernickel", "trebuchets", "barrette", "hibiscus", "pogrom", "kilimanjaro", "chassis", "tamale", "bursitis", "junket", "maracas", "protégé", "quandary", "gyroplane", "cycads", "gingham", "adriatic", "silhouette", "piccolo", "cannelloni", "auxiliary", "thesaurus", "tulle", "bronchitis"]
 }
 
-def get_word_info(word):
-    """Returns [definition, example] with a fallback for missing words."""
-    return WORD_DATA.get(word.lower(), [
-        "Definition not yet in database. Check Merriam-Webster for the Scripps definition!", 
-        "Keep practicing this word to master it!"
+# --- 2. MASTER DICTIONARY (MEANINGS & EXAMPLES) ---
+# This function serves as the central database for word information.
+def get_word_details(word):
+    # Mapping for specific Scripps words provided in the lists
+    data = {
+        "serape": ["A colorful woolen shawl or blanket worn in Mexico.", "He draped a bright serape over his shoulders for the festival."],
+        "unicorn": ["A mythical horse-like creature with a single horn.", "The unicorn is a symbol of magic and purity."],
+        "verdict": ["The decision made by a jury in a trial.", "The jury reached a unanimous verdict of not guilty."],
+        "syndrome": ["A group of symptoms that consistently occur together.", "The doctor identified the rare syndrome after several tests."],
+        "gangly": ["Awkwardly tall and thin.", "The gangly teenager struggled to find pants that fit."],
+        "promenade": ["A paved public walk, typically one along a waterfront.", "They took a evening stroll along the beach promenade."],
+        "hesitate": ["To pause before saying or doing something.", "Do not hesitate to call if you need help."],
+        "scorcher": ["A day or period of very hot weather.", "Last Monday was a real scorcher, reaching 100 degrees."],
+        "especially": ["To a great extent; very much.", "I love all fruit, especially strawberries."],
+        "february": ["The second month of the year.", "February is the only month with 28 days."],
+        "dinosaur": ["A fossil reptile of the Mesozoic era.", "The museum has a massive T-Rex dinosaur skeleton."],
+        # Add additional definitions as needed. 
+    }
+    
+    # Return specific data or a helpful generic response if not yet filled
+    return data.get(word.lower(), [
+        "Please consult the Merriam-Webster Scripps Dictionary for this specific definition.",
+        f"You used the word '{word}' correctly in the spelling round!"
     ])
 
-# --- 2. AUDIO HELPER (Fixed for Replay) ---
-def get_audio_base64(text):
+# --- 3. CORE LOGIC & AUDIO ---
+def get_audio(text):
     tts = gTTS(text=text, lang='en')
     fp = BytesIO()
     tts.write_to_fp(fp)
     return base64.b64encode(fp.getvalue()).decode()
 
-st.set_page_config(page_title="Spelling Bee Pro", page_icon="🐝")
-st.title("🐝 Spelling Bee Master")
+st.set_page_config(page_title="Bee Ready Spelling", page_icon="🐝")
+st.title("🐝 National Spelling Bee Trainer")
 
-# Initialize Session State
-if 'game_started' not in st.session_state:
-    st.session_state.game_started = False
-    st.session_state.current_round = 0
-    st.session_state.score = 0
-    st.session_state.wrong_words = []
-    st.session_state.game_words = []
-    st.session_state.audio_key = 0 # Helper to force audio replay
+if 'game' not in st.session_state:
+    st.session_state.game = {"active": False, "round": 0, "score": 0, "words": [], "wrong": [], "audio_id": 0}
 
-# --- 3. START SCREEN ---
-if not st.session_state.game_started:
-    st.subheader("Select Your Challenge:")
-    mode = st.radio("Choose Level", ["3rd Grader Spelling Bee", "One Bee", "Two Bee", "Three Bee"])
-    
-    if st.button("Start Game"):
-        # Define word pool based on mode (simulated lists)
-        if "3rd Grader" in mode or "One Bee" in mode:
-            pool_size = 20
-            # Pull from One Bee/3rd Grade keys in WORD_DATA
-            full_pool = [w for w in WORD_DATA.keys()] 
-        else:
-            pool_size = 10
-            full_pool = [w for w in WORD_DATA.keys()]
-
-        st.session_state.game_words = random.sample(full_pool, min(pool_size, len(full_pool)))
-        st.session_state.game_started = True
-        st.session_state.current_round = 0
-        st.session_state.score = 0
-        st.session_state.wrong_words = []
+# --- START SCREEN ---
+if not st.session_state.game["active"]:
+    st.subheader("Select Your Level")
+    choice = st.selectbox("Level:", list(POOLS.keys()))
+    if st.button("Start"):
+        count = 20 if choice in ["3rd Grader", "One Bee"] else 10
+        st.session_state.game["words"] = random.sample(POOLS[choice], count)
+        st.session_state.game["active"] = True
+        st.session_state.game["round"] = 0
+        st.session_state.game["score"] = 0
+        st.session_state.game["wrong"] = []
         st.rerun()
 
-# --- 4. GAME INTERFACE ---
+# --- GAME SCREEN ---
 else:
-    total_words = len(st.session_state.game_words)
-    if st.session_state.current_round < total_words:
-        target_word = st.session_state.game_words[st.session_state.current_round]
-        st.subheader(f"Word {st.session_state.current_round + 1} of {total_words}")
+    game = st.session_state.game
+    if game["round"] < len(game["words"]):
+        word = game["words"][game["round"]]
+        st.write(f"### Word {game['round'] + 1} of {len(game['words'])}")
         
-        # Audio Player (Uses unique key to force replay)
-        audio_b64 = get_audio_base64(target_word)
-        st.markdown(f'<audio key="{st.session_state.audio_key}" autoplay src="data:audio/mp3;base64,{audio_b64}">', unsafe_allow_html=True)
-        
-        if st.button("🔊 Replay Word"):
-            st.session_state.audio_key += 1 # Forces Re-render
+        # Audio & Replay (Fixed)
+        audio_b64 = get_audio(word)
+        st.markdown(f'<audio key="{game["audio_id"]}" autoplay src="data:audio/mp3;base64,{audio_b64}">', unsafe_allow_html=True)
+        if st.button("🔊 Replay"):
+            game["audio_id"] += 1
             st.rerun()
 
-        user_input = st.text_input("Spelling:", key=f"input_{st.session_state.current_round}").strip().lower()
-
-        if st.button("Submit Answer"):
-            if user_input == target_word.lower():
+        ans = st.text_input("Type it:", key=f"ans_{game['round']}").strip().lower()
+        if st.button("Submit"):
+            if ans == word.lower():
                 st.success("Correct! ✨")
-                st.session_state.score += 1
+                game["score"] += 1
             else:
-                st.error(f"The word was '{target_word}'")
-                st.session_state.wrong_words.append(target_word)
-            
-            st.session_state.current_round += 1
+                st.error(f"Incorrect. It was: {word}")
+                game["wrong"].append(word)
+            game["round"] += 1
             st.rerun()
-
-    # --- 5. RESULTS & FIXED REVIEW SCREEN ---
+    
+    # --- RESULTS ---
     else:
         st.balloons()
-        st.header("Great Work!")
-        st.metric("Final Score", f"{st.session_state.score} / {total_words}")
+        st.header("Great Practice!")
+        st.metric("Score", f"{game['score']}/{len(game['words'])}")
+        st.info("Keep it up! Every word you practice makes you a better speller. 🌈")
         
-        if st.session_state.wrong_words:
-            st.subheader("Words to Study:")
-            for word in st.session_state.wrong_words:
-                info = get_word_info(word)
-                with st.expander(f"Review: {word}"):
-                    st.write(f"📖 **Meaning:** {info[0]}")
-                    st.write(f"📝 **Example:** *{info[1]}*")
+        if game["wrong"]:
+            st.subheader("Review Your Missed Words")
+            for w in game["wrong"]:
+                info = get_word_details(w)
+                with st.expander(f"📖 {w}"):
+                    st.write(f"**Meaning:** {info[0]}")
+                    st.write(f"**Example:** *{info[1]}*")
         
-        if st.button("Play New Game"):
-            st.session_state.game_started = False
+        if st.button("Play Again"):
+            st.session_state.game["active"] = False
             st.rerun()
