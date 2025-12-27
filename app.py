@@ -1,8 +1,3 @@
-To address the issues and incorporate the new game lengths, the code has been updated with a robust logic for the "Replay" button and an integrated dictionary for word definitions and examples.
-
-Updated Spelling Bee Game Code (app.py)
-Python
-
 import streamlit as st
 import random
 from gtts import gTTS
