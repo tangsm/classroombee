@@ -517,13 +517,23 @@ WORD_DATA = {
     "zooming": ["Moving or traveling very quickly.", "The cars were zooming past us on the highway."]
 }
 
+# --- 2. UPDATED GET INFO FUNCTION (THE KEY FIX) ---
 def get_word_info(word):
-    """Provides specific details for the review page."""
-    word = word.lower()
-    if word in WORD_DATA:
-        return WORD_DATA[word]
-    return [f"'{word.capitalize()}' is a Scripps Spelling Bee word.", f"Example: The teacher asked the class to spell '{word}'."]
-
+    """
+    Cleans the input word to ensure it matches the WORD_DATA keys perfectly.
+    """
+    # 1. Convert to lowercase
+    # 2. Remove leading/trailing spaces
+    # 3. Remove any trailing punctuation (like asterisks from the PDF)
+    clean_key = word.lower().strip().replace("*", "")
+    
+    if clean_key in WORD_DATA:
+        return WORD_DATA[clean_key]
+    else:
+        return [
+            f"Definition currently being updated in the Bee database for '{word}'.", 
+            f"Study Tip: Try to find the word '{word}' in a sentence online!"
+        ]
 # --- 3. STREAMLIT APP LOGIC ---
 st.set_page_config(page_title="Scripps Spelling Bee Practice", page_icon="🐝")
 st.title("🐝 National Spelling Bee Trainer")
