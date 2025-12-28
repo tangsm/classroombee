@@ -7,31 +7,46 @@ import time
 import streamlit.components.v1 as components
 
 def speech_to_text_js():
-    """Uses Browser's Native Web Speech API to get text without extra libraries."""
     js_code = """
         <script>
+        // Use the Streamlit component library
+        function sendToStreamlit(value) {
+            window.parent.postMessage({
+                type: 'streamlit:setComponentValue',
+                value: value
+            }, '*');
+        }
+
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            sendToStreamlit(transcript); // Send text back
+            document.getElementById('mic-btn').innerHTML = "✅ Captured!";
+            setTimeout(() => {
+                document.getElementById('mic-btn').innerHTML = "🎤 Start Speaking";
+            }, 2000);
+        };
+
+        recognition.onerror = (event) => {
+            console.error(event.error);
+            document.getElementById('mic-btn').innerHTML = "❌ Error: Try again";
+        };
 
         function startDictation() {
             recognition.start();
             document.getElementById('mic-btn').innerHTML = "Listening...";
         }
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            // Send the text back to Streamlit
-            window.parent.postMessage({type: 'streamlit:setComponentValue', value: transcript}, '*');
-            document.getElementById('mic-btn').innerHTML = "🎤 Start Speaking";
-        };
         </script>
-        <button id="mic-btn" onclick="startDictation()" style="padding: 10px; border-radius: 5px; cursor: pointer;">
+        <button id="mic-btn" onclick="startDictation()" 
+            style="width: 100%; padding: 10px; border: none; border-radius: 5px; 
+            background-color: #FF4B4B; color: white; cursor: pointer; font-weight: bold;">
             🎤 Start Speaking
         </button>
     """
-    # This component captures the text from the browser mic
-    return components.html(js_code, height=60)
+    return components.html(js_code, height=70)
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
@@ -670,40 +685,44 @@ else:
                     st.session_state.game_active = False
                     st.rerun()
 
-        # --- BRANCH B: CHALLENGE MODE ---
+# --- BRANCH B: CHALLENGE MODE ---
         else:
             st.header("✍️ Spelling Challenge")
             st.markdown(audio_html, unsafe_allow_html=True)
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
+            
+            # Repeat Audio Button
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
             # 1. Microphone Input (JavaScript Native)
-            # Use .value to get the actual text string from the component
-            mic_component = speech_to_text_js()
+            spoken_val = speech_to_text_js()
             
-            # If the mic just sent new text, store it in session state
-            if mic_component is not None and isinstance(mic_component, str):
-                st.session_state.current_voice_ans = mic_component
-            
+            # Catch the return from JS and persist it in session_state
+            if spoken_val is not None and isinstance(spoken_val, str) and spoken_val != "":
+                st.session_state.current_voice_ans = spoken_val
+
             # 2. Text Input
             typed_ans = st.text_input("⌨️ Type Answer:", key=f"text_{st.session_state.round}").strip()
 
-            # 3. Determine Final String Answer
-            voice_val = st.session_state.get('current_voice_ans', "")
+            # 3. Retrieve and Display Voice Answer if it exists
+            current_voice = st.session_state.get('current_voice_ans', "")
             
-            # Ensure user_ans is ALWAYS a string
-            user_ans = str(typed_ans) if typed_ans else str(voice_val)
-            
-            if voice_val:
-                st.info(f"🎤 Spoken detected: {voice_val}")
+            if current_voice:
+                st.info(f"🎤 Voice Detected: **{current_voice}**")
+                if st.button("Clear Voice Answer"):
+                    st.session_state.current_voice_ans = ""
+                    st.rerun()
 
-            # 4. Submission Logic
+            # 4. Determine Final Answer (Typed input takes priority)
+            user_ans = typed_ans if typed_ans else current_voice
+
+            # 5. Submission Logic
             if st.button("Submit Spelling", key=f"sub_{st.session_state.round}"):
-                if user_ans and user_ans.strip() != "":
+                if user_ans:
                     target = current_word.lower().strip().replace("*", "")
                     
-                    # Now .lower() will work because user_ans is guaranteed to be a string
-                    processed_ans = user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
+                    # Clean input: remove hyphens, spaces, and dots from voice/typing
+                    processed_ans = str(user_ans).lower().replace("-", "").replace(" ", "").replace(".", "")
                     
                     if target in processed_ans:
                         st.success(f"Correct! The word was {target.upper()}")
@@ -712,7 +731,7 @@ else:
                         st.error(f"Incorrect. You provided: '{user_ans}'. Correct: {target.upper()}")
                         st.session_state.wrong_list.append(current_word)
                     
-                    # RESET for next round
+                    # RESET session state for the next word
                     st.session_state.current_voice_ans = ""
                     st.session_state.round += 1
                     st.rerun()
