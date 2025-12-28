@@ -604,25 +604,22 @@ else:
     if st.session_state.round < len(pool):
         current_word = pool[st.session_state.round]
         
+        # FIX: Generate audio data ONCE at the top of the screen
+        b64_audio = get_tts_audio(current_word)
+        audio_html = f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">'
+        
         # --- BRANCH A: STUDY MODE ---
         if st.session_state.mode == "Study (Learning)":
             st.header("📖 Study Mode")
-            info = get_word_info(current_word) # Retrieves meaning and example
+            # Play audio only once here
+            st.markdown(audio_html, unsafe_allow_html=True)
+            
+            info = get_word_info(current_word)
             
             st.divider()
             st.title(current_word.capitalize())
             
-            # Auto-play audio pronunciation
-            # (Assumes get_tts_audio is your helper function using gTTS)
-            b64_audio = get_tts_audio(current_word) 
-            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
-            
-            # --- IN STUDY MODE ---
-            # Place the audio call OUTSIDE of any button 'if' statements
-            b64_audio = get_tts_audio(current_word) 
-            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
-
-            # The button just needs to trigger a rerun to play the audio again
+            # Simple button triggers a rerun, which plays the audio_html again
             st.button("🔊 Re-play Pronunciation", key="study_repeat")
 
             st.info(f"**Meaning:** {info[0]}")
@@ -646,19 +643,12 @@ else:
         # --- BRANCH B: CHALLENGE MODE ---
         else:
             st.header("✍️ Spelling Challenge")
+            # Play audio only once here
+            st.markdown(audio_html, unsafe_allow_html=True)
+            
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
             
-            # 1. Play audio automatically on load
-            b64_audio = get_tts_audio(current_word)
-            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
-            
-            # 2. Add the Repeat Button
-            # --- IN CHALLENGE MODE ---
-            # Place the audio call OUTSIDE of any button 'if' statements
-            b64_audio = get_tts_audio(current_word)
-            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
-
-            # The button just needs to trigger a rerun to play the audio again
+            # Button triggers a rerun to hear the word again
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
             user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
