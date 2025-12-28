@@ -4,6 +4,7 @@ from gtts import gTTS
 import base64
 from io import BytesIO
 import time
+from streamlit_mic_recorder import mic_recorder
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
@@ -664,7 +665,54 @@ else:
             # Button triggers a rerun to hear the word again
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
-            user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
+            # user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
+            # --- IN CHALLENGE MODE BRANCH ---
+            st.write("Spell the word (you can say 'A-P-P-L-E' or just 'Apple')")
+
+            # Create two columns for Voice and Text
+            col_voice, col_text = st.columns(2)
+
+            with col_voice:
+                st.write("🎤 Spoken Answer:")
+                # This creates a microphone button that converts speech to text automatically
+                audio_record = mic_recorder(
+                    start_prompt="Click to Start Speaking",
+                    stop_prompt="Stop & Process",
+                    key=f"mic_{st.session_state.round}"
+                )
+
+            with col_text:
+                typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"text_{st.session_state.round}").strip().lower()
+
+            # Determine which answer to use
+            user_ans = ""
+            if audio_record:
+                user_ans = audio_record['text']
+                st.info(f"Detected: {user_ans}")
+            elif typed_ans:
+                user_ans = typed_ans
+
+            if st.button("Submit Spelling", key=f"sub_{st.session_state.round}"):
+                if user_ans:
+                    # Clean both the target and the user's spoken/typed answer
+                    target = current_word.lower().strip().replace("*", "")
+                    # Remove hyphens, spaces, and periods (common in STT for spelled out letters)
+                    processed_ans = user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
+        
+                    if processed_ans == target:
+                        st.success(f"Correct! {target.upper()}")
+                        st.session_state.score += 1
+                    else:
+                        st.error(f"Incorrect. You said '{user_ans}'. Correct: {target.upper()}")
+                        st.session_state.wrong_list.append(current_word)
+        
+                    st.session_state.round += 1
+                    st.rerun()
+                else:
+                    st.warning("Please provide an answer first!")
+
+
+            
             
             if st.button("Submit Spelling"):
                 if user_ans == current_word.lower().strip().replace("*", ""):
