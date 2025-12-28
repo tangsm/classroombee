@@ -4,6 +4,34 @@ from gtts import gTTS
 import base64
 from io import BytesIO
 import time
+import streamlit.components.v1 as components
+
+def speech_to_text_js():
+    """Uses Browser's Native Web Speech API to get text without extra libraries."""
+    js_code = """
+        <script>
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        function startDictation() {
+            recognition.start();
+            document.getElementById('mic-btn').innerHTML = "Listening...";
+        }
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            // Send the text back to Streamlit
+            window.parent.postMessage({type: 'streamlit:setComponentValue', value: transcript}, '*');
+            document.getElementById('mic-btn').innerHTML = "🎤 Start Speaking";
+        };
+        </script>
+        <button id="mic-btn" onclick="startDictation()" style="padding: 10px; border-radius: 5px; cursor: pointer;">
+            🎤 Start Speaking
+        </button>
+    """
+    # This component captures the text from the browser mic
+    return components.html(js_code, height=60)
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
@@ -673,12 +701,19 @@ else:
 
             with col_voice:
                 st.write("🎤 Spoken Answer:")
-                # This creates a microphone button that converts speech to text automatically
-                audio_record = mic_recorder(
-                    start_prompt="Click to Start Speaking",
-                    stop_prompt="Stop & Process",
-                    key=f"mic_{st.session_state.round}"
-                )
+                # --- INSIDE CHALLENGE MODE BRANCH ---
+                st.write("Spell the word out loud:")
+                # Call the JS component
+                spoken_text = speech_to_text_js()
+
+                # spoken_text will contain the string once the user finishes talking
+                if spoken_text:
+                    st.session_state.current_voice_ans = spoken_text
+
+                # Use current_voice_ans in your Submit button logic
+                user_ans = st.session_state.get('current_voice_ans', "")
+                if user_ans:
+                    st.info(f"The Judge heard: {user_ans}")
 
             with col_text:
                 typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"text_{st.session_state.round}").strip().lower()
