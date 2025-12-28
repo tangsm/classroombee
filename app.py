@@ -604,11 +604,22 @@ else:
     
     if st.session_state.round < len(pool):
         current_word = pool[st.session_state.round]
+        clean_word = current_word.lower().strip().replace("*", "")
         
-        # FIX: Add a unique timestamp so the browser always re-plays on rerun
-        b64_audio = get_tts_audio(current_word)
-        timestamp = time.time() 
-        audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_audio}">'
+        # 1. Create the audio for the word itself
+        b64_word = get_tts_audio(clean_word)
+        
+        # 2. Create audio for the spelling (adding spaces/commas helps the AI pace it)
+        spelling = ", ".join(list(clean_word.upper()))
+        b64_spelling = get_tts_audio(f"{clean_word}... {spelling}")
+        
+        timestamp = time.time()
+        # For Study Mode: use the spelling audio
+        if st.session_state.mode == "Study (Learning)":
+            audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_spelling}">'
+        # For Challenge Mode: just say the word
+        else:
+            audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_word}">'
         
         # --- BRANCH A: STUDY MODE ---
         if st.session_state.mode == "Study (Learning)":
