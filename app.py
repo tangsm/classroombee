@@ -3,6 +3,7 @@ import random
 from gtts import gTTS
 import base64
 from io import BytesIO
+import time
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
@@ -604,9 +605,10 @@ else:
     if st.session_state.round < len(pool):
         current_word = pool[st.session_state.round]
         
-        # FIX: Generate audio data ONCE at the top of the screen
+        # FIX: Add a unique timestamp so the browser always re-plays on rerun
         b64_audio = get_tts_audio(current_word)
-        audio_html = f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">'
+        timestamp = time.time() 
+        audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_audio}">'
         
         # --- BRANCH A: STUDY MODE ---
         if st.session_state.mode == "Study (Learning)":
