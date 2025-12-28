@@ -662,11 +662,25 @@ else:
 
     # --- SCREEN 3: RESULTS / SUMMARY ---
     else:
-        st.balloons()
         st.header("Session Complete!")
         
         if st.session_state.mode == "Challenge (Test)":
-            st.metric("Final Score", f"{st.session_state.score} / {len(pool)}")
+            score = st.session_state.score
+            total = len(pool)
+            st.metric("Final Score", f"{score} / {total}")
+
+            # Custom messages and effects based on score
+            if score == total:
+                st.snow()  # Or st.toast("PERFECT!")
+                st.balloons()
+                st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
+            elif score >= 16:
+                st.balloons()
+                st.success("🎈 Amazing job! You've almost mastered this list! 🎈")
+            elif score >= 5:
+                st.info("Good effort! Keep practicing and you'll get even higher next time.")
+            else:
+                st.warning("Don't give up! Every mistake is a chance to learn. Let's review the words below.")
         
         if st.session_state.wrong_list:
             st.subheader("Words to Review")
