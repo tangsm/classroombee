@@ -632,27 +632,16 @@ else:
     
     if st.session_state.round < len(pool):
         current_word = pool[st.session_state.round]
-        clean_word = current_word.lower().strip().replace("*", "")
         
-        # 1. Create the audio for the word itself
-        b64_word = get_tts_audio(clean_word)
-        
-        # 2. Create audio for the spelling (adding spaces/commas helps the AI pace it)
-        spelling = ", ".join(list(clean_word.upper()))
-        b64_spelling = get_tts_audio(f"{clean_word}... {spelling}")
-        
-        timestamp = time.time()
-        # For Study Mode: use the spelling audio
-        if st.session_state.mode == "Study (Learning)":
-            audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_spelling}">'
-        # For Challenge Mode: just say the word
-        else:
-            audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_word}">'
+        # 1. AUDIO GENERATION (Fixed Echo: Define once per page load)
+        # Use time.time() as a "cache buster" to make the Repeat button work
+        b64_audio = get_tts_audio(current_word)
+        timestamp = time.time() 
+        audio_html = f'<audio autoplay key="{timestamp}" src="data:audio/mp3;base64,{b64_audio}">'
         
         # --- BRANCH A: STUDY MODE ---
         if st.session_state.mode == "Study (Learning)":
             st.header("📖 Study Mode")
-            # Play audio only once here
             st.markdown(audio_html, unsafe_allow_html=True)
             
             info = get_word_info(current_word)
@@ -666,7 +655,7 @@ else:
             st.info(f"**Meaning:** {info[0]}")
             st.success(f"**Sample Sentence:** *{info[1]}*")
 
-            # Navigation buttons
+            # Navigation
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
                 if st.button("⬅️ Previous") and st.session_state.round > 0:
@@ -684,80 +673,47 @@ else:
         # --- BRANCH B: CHALLENGE MODE ---
         else:
             st.header("✍️ Spelling Challenge")
-            # Play audio only once here
             st.markdown(audio_html, unsafe_allow_html=True)
-            
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
             
-            # Button triggers a rerun to hear the word again
+            # Repeat Button
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
-            # user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
-            # --- IN CHALLENGE MODE BRANCH ---
-            st.write("Spell the word (you can say 'A-P-P-L-E' or just 'Apple')")
+            # A. Microphone Input (JavaScript Native)
+            spoken_text = speech_to_text_js()
+            if spoken_text:
+                st.session_state.current_voice_ans = spoken_text
+            
+            # B. Text Input
+            typed_ans = st.text_input("⌨️ Type Answer:", key=f"text_{st.session_state.round}").strip().lower()
 
-            # Create two columns for Voice and Text
-            col_voice, col_text = st.columns(2)
+            # Logic to decide which answer to use
+            voice_val = st.session_state.get('current_voice_ans', "")
+            user_ans = typed_ans if typed_ans else voice_val
+            
+            if voice_val:
+                st.info(f"🎤 Spoken detected: {voice_val}")
 
-            with col_voice:
-                st.write("🎤 Spoken Answer:")
-                # --- INSIDE CHALLENGE MODE BRANCH ---
-                st.write("Spell the word out loud:")
-                # Call the JS component
-                spoken_text = speech_to_text_js()
-
-                # spoken_text will contain the string once the user finishes talking
-                if spoken_text:
-                    st.session_state.current_voice_ans = spoken_text
-
-                # Use current_voice_ans in your Submit button logic
-                user_ans = st.session_state.get('current_voice_ans', "")
-                if user_ans:
-                    st.info(f"The Judge heard: {user_ans}")
-
-            with col_text:
-                typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"text_{st.session_state.round}").strip().lower()
-
-            # Determine which answer to use
-            user_ans = ""
-            if audio_record:
-                user_ans = audio_record['text']
-                st.info(f"Detected: {user_ans}")
-            elif typed_ans:
-                user_ans = typed_ans
-
+            # Submission Logic
             if st.button("Submit Spelling", key=f"sub_{st.session_state.round}"):
                 if user_ans:
-                    # Clean both the target and the user's spoken/typed answer
                     target = current_word.lower().strip().replace("*", "")
-                    # Remove hyphens, spaces, and periods (common in STT for spelled out letters)
+                    # Clean input: remove hyphens, spaces, and dots
                     processed_ans = user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
-        
-                    if processed_ans == target:
-                        st.success(f"Correct! {target.upper()}")
+                    
+                    if target in processed_ans:
+                        st.success(f"Correct! The word was {target.upper()}")
                         st.session_state.score += 1
                     else:
-                        st.error(f"Incorrect. You said '{user_ans}'. Correct: {target.upper()}")
+                        st.error(f"Incorrect. You provided: '{user_ans}'. Correct: {target.upper()}")
                         st.session_state.wrong_list.append(current_word)
-        
+                    
+                    # RESET for next round
+                    st.session_state.current_voice_ans = ""
                     st.session_state.round += 1
                     st.rerun()
                 else:
-                    st.warning("Please provide an answer first!")
-
-
-            
-            
-            if st.button("Submit Spelling"):
-                if user_ans == current_word.lower().strip().replace("*", ""):
-                    st.success("Correct!")
-                    st.session_state.score += 1
-                else:
-                    st.error(f"Incorrect. The correct spelling was: {current_word}")
-                    st.session_state.wrong_list.append(current_word)
-                
-                st.session_state.round += 1
-                st.rerun()
+                    st.warning("Please provide an answer (speak or type).")
 
     # --- SCREEN 3: RESULTS / SUMMARY ---
     else:
