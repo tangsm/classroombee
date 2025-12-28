@@ -617,8 +617,13 @@ else:
             b64_audio = get_tts_audio(current_word) 
             st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
             
-            if st.button("🔊 Re-play Pronunciation"):
-                st.rerun()
+            # --- IN STUDY MODE ---
+            # Place the audio call OUTSIDE of any button 'if' statements
+            b64_audio = get_tts_audio(current_word) 
+            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
+
+            # The button just needs to trigger a rerun to play the audio again
+            st.button("🔊 Re-play Pronunciation", key="study_repeat")
 
             st.info(f"**Meaning:** {info[0]}")
             st.success(f"**Sample Sentence:** *{info[1]}*")
@@ -648,9 +653,14 @@ else:
             st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
             
             # 2. Add the Repeat Button
-            if st.button("🔊 Repeat Word"):
-                st.rerun() # Refreshing the page triggers the 'autoplay' audio again
-            
+            # --- IN CHALLENGE MODE ---
+            # Place the audio call OUTSIDE of any button 'if' statements
+            b64_audio = get_tts_audio(current_word)
+            st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
+
+            # The button just needs to trigger a rerun to play the audio again
+            st.button("🔊 Repeat Word", key="challenge_repeat")
+
             user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
             
             if st.button("Submit Spelling"):
