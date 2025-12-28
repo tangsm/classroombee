@@ -643,9 +643,13 @@ else:
             st.header("✍️ Spelling Challenge")
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
             
-            # Play audio automatically
+            # 1. Play audio automatically on load
             b64_audio = get_tts_audio(current_word)
             st.markdown(f'<audio autoplay src="data:audio/mp3;base64,{b64_audio}">', unsafe_allow_html=True)
+            
+            # 2. Add the Repeat Button
+            if st.button("🔊 Repeat Word"):
+                st.rerun() # Refreshing the page triggers the 'autoplay' audio again
             
             user_ans = st.text_input("Type your spelling here:", key=f"q_{st.session_state.round}").strip().lower()
             
