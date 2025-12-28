@@ -675,30 +675,34 @@ else:
             st.header("✍️ Spelling Challenge")
             st.markdown(audio_html, unsafe_allow_html=True)
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
-            
-            # Repeat Button
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
-            # A. Microphone Input (JavaScript Native)
-            spoken_text = speech_to_text_js()
-            if spoken_text:
-                st.session_state.current_voice_ans = spoken_text
+            # 1. Microphone Input (JavaScript Native)
+            # Use .value to get the actual text string from the component
+            mic_component = speech_to_text_js()
             
-            # B. Text Input
-            typed_ans = st.text_input("⌨️ Type Answer:", key=f"text_{st.session_state.round}").strip().lower()
+            # If the mic just sent new text, store it in session state
+            if mic_component is not None and isinstance(mic_component, str):
+                st.session_state.current_voice_ans = mic_component
+            
+            # 2. Text Input
+            typed_ans = st.text_input("⌨️ Type Answer:", key=f"text_{st.session_state.round}").strip()
 
-            # Logic to decide which answer to use
+            # 3. Determine Final String Answer
             voice_val = st.session_state.get('current_voice_ans', "")
-            user_ans = typed_ans if typed_ans else voice_val
+            
+            # Ensure user_ans is ALWAYS a string
+            user_ans = str(typed_ans) if typed_ans else str(voice_val)
             
             if voice_val:
                 st.info(f"🎤 Spoken detected: {voice_val}")
 
-            # Submission Logic
+            # 4. Submission Logic
             if st.button("Submit Spelling", key=f"sub_{st.session_state.round}"):
-                if user_ans:
+                if user_ans and user_ans.strip() != "":
                     target = current_word.lower().strip().replace("*", "")
-                    # Clean input: remove hyphens, spaces, and dots
+                    
+                    # Now .lower() will work because user_ans is guaranteed to be a string
                     processed_ans = user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
                     
                     if target in processed_ans:
