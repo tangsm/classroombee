@@ -7,40 +7,37 @@ import time
 import streamlit.components.v1 as components
 
 def speech_to_text_js():
-    # We use the round number as a key to ensure a fresh mic for every word
-    comp_key = f"mic_comp_{st.session_state.round}"
+    # Stable key based on the current word round
+    comp_key = f"mic_{st.session_state.round}"
     
-    js_code = f"""
+    js_code = """
         <script>
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
 
-        recognition.onresult = (event) => {{
+        recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            
-            // This is the critical bridge to Streamlit
-            window.parent.postMessage({{
+            window.parent.postMessage({
                 type: 'streamlit:setComponentValue',
                 value: transcript
-            }}, '*');
-            
-            document.getElementById('mic-btn').innerHTML = "✅ Received: " + transcript;
-        }};
+            }, '*');
+        };
 
-        function startDictation() {{
+        function startDictation() {
             recognition.start();
             document.getElementById('mic-btn').innerHTML = "Listening...";
-        }}
+            recognition.onend = () => {
+                document.getElementById('mic-btn').innerHTML = "🎤 Click to Speak Spelling";
+            };
+        }
         </script>
         <button id="mic-btn" onclick="startDictation()" 
             style="width: 100%; padding: 12px; border: none; border-radius: 8px; 
-            background-color: #FF4B4B; color: white; cursor: pointer; font-weight: bold;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+            background-color: #FF4B4B; color: white; cursor: pointer; font-weight: bold;">
             🎤 Click to Speak Spelling
         </button>
     """
-    # Adding the 'key' parameter is vital for Streamlit to catch the return value
     return components.html(js_code, height=80, key=comp_key)
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
@@ -689,35 +686,39 @@ else:
             
             st.button("🔊 Repeat Word", key="challenge_repeat")
 
-            # 1. Microphone Input
-            # If the JS says "Captured", this variable should now hold the text
+            # 1. Capture JS Component Value
             spoken_val = speech_to_text_js()
             
-            # If spoken_val changes, update our session state immediately
+            # Use a separate session state key to keep the text persistent
             if spoken_val and isinstance(spoken_val, str):
-                if st.session_state.get('current_voice_ans') != spoken_val:
-                    st.session_state.current_voice_ans = spoken_val
-                    st.rerun() # Force a rerun to show the detected text in the UI
+                st.session_state.current_voice_ans = spoken_val
 
-            # 2. Retrieve Voice Answer
+            # 2. UI Display for detected voice
             current_voice = st.session_state.get('current_voice_ans', "")
-            
             if current_voice:
                 st.info(f"🎤 The Judge heard: **{current_voice}**")
-                if st.button("❌ Clear and Try Again"):
+                if st.button("❌ Clear Voice"):
                     st.session_state.current_voice_ans = ""
                     st.rerun()
 
-            # 3. Text Input (Backup)
-            typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"text_{st.session_state.round}").strip()
+            # 3. Text Input
+            typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"t_in_{st.session_state.round}").strip()
 
-            user_ans = typed_ans if typed_ans else current_voice
+            # 4. Final Answer Resolution
+            # We force everything to a string here to prevent TypeErrors
+            if typed_ans:
+                user_ans = str(typed_ans)
+            elif current_voice:
+                user_ans = str(current_voice)
+            else:
+                user_ans = ""
 
-            # 4. Submission Logic
-            if st.button("Submit Spelling", key=f"sub_{st.session_state.round}"):
+            # 5. Submission Logic
+            if st.button("Submit Spelling", key=f"btn_{st.session_state.round}"):
                 if user_ans:
                     target = current_word.lower().strip().replace("*", "")
-                    processed_ans = str(user_ans).lower().replace("-", "").replace(" ", "").replace(".", "")
+                    # Clean the string for comparison
+                    processed_ans = user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
                     
                     if target in processed_ans:
                         st.success(f"Correct! The word was {target.upper()}")
@@ -726,11 +727,12 @@ else:
                         st.error(f"Incorrect. You said: '{user_ans}'. Correct: {target.upper()}")
                         st.session_state.wrong_list.append(current_word)
                     
+                    # Cleanup for next round
                     st.session_state.current_voice_ans = ""
                     st.session_state.round += 1
                     st.rerun()
                 else:
-                    st.warning("Please provide an answer first!")
+                    st.warning("Please speak or type your answer.")
 
     # --- SCREEN 3: RESULTS / SUMMARY ---
     else:
