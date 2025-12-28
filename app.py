@@ -565,8 +565,8 @@ if not st.session_state.game_active:
     
     # Difficulty selection
     level = st.selectbox("Select Word Pool:", [
-        "3rd Grader Classroom Bee (50 words)", 
-        "School Bee: One Bee (150 words)", 
+        "3rd Grader Classroom Bee", 
+        "School Bee: One Bee", 
         "School Bee: Two Bee", 
         "School Bee: Three Bee"
     ])
