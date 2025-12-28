@@ -4,7 +4,6 @@ from gtts import gTTS
 import base64
 from io import BytesIO
 import time
-from streamlit_mic_recorder import mic_recorder
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
