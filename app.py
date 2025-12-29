@@ -689,33 +689,48 @@ elif st.session_state.game_active:
 
 # --- SCREEN 3: RESULTS / SUMMARY ---
 elif not st.session_state.game_active and st.session_state.round > 0:
-    st.balloons()
     st.title("🏁 Session Complete!")
     
     total_words = len(st.session_state.current_pool)
     score = st.session_state.score
     percentage = int((score / total_words) * 100) if total_words > 0 else 0
     
+    # 1. Determine Message and Visual Effects based on score
     if percentage == 100:
+        st.balloons()  # Only triggers for 100%
         st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
     elif percentage >= 80:
+        st.snow()      # A different effect for high scores
         st.info("🎈 Amazing job! You've almost mastered this list! 🎈")
+    elif percentage >= 30:
+        st.warning("👍 Good effort! Keep practicing and you'll get even higher next time.")
     else:
-        st.error("💪 Keep practicing! Review below.")
+        st.error("💪 Don't give up! Every mistake is a chance to learn. Review below.")
 
+    # 2. Display Stats
     col1, col2 = st.columns(2)
-    col1.metric("Correct", f"{score} / {total_words}")
-    col2.metric("Grade", f"{percentage}%")
+    col1.metric("Correct Answers", f"{score} / {total_words}")
+    col2.metric("Final Grade", f"{percentage}%")
 
+    st.divider()
+
+    # 3. Review Section
     if st.session_state.wrong_list:
-        st.subheader("📝 Review Missed Words")
+        st.subheader("📝 Review Your Missed Words")
         for word in sorted(set(st.session_state.wrong_list)):
             meaning, sentence = get_word_info(word)
             with st.expander(f"📖 {word.upper()}", expanded=True):
-                st.write(f"**Meaning:** {meaning}")
-                st.write(f"**Example:** {sentence}")
-
+                st.markdown(f"**Meaning:** {meaning}")
+                st.markdown(f"**Example:** *{sentence}*")
+    
+    # 4. Restart Button
     if st.button("Return to Main Menu"):
         st.session_state.game_active = False
         st.session_state.round = 0
+        st.session_state.score = 0
+        st.session_state.wrong_list = []
+        # Cleanup audio flags
+        for k in list(st.session_state.keys()):
+            if k.startswith("submitted_"):
+                del st.session_state[k]
         st.rerun()
