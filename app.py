@@ -6,11 +6,7 @@ from io import BytesIO
 import time
 import streamlit.components.v1 as components
 
-def speech_to_text_js():
-    # Use a very simple, safe string key
-    round_num = str(st.session_state.get('round', 0))
-    comp_key = "mic_round_" + round_num
-    
+def speech_to_text_js(key):
     js_code = """
         <script>
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -39,7 +35,7 @@ def speech_to_text_js():
             🎤 Click to Speak Spelling
         </button>
     """
-    return components.html(js_code, height=90, key=comp_key)
+    return components.html(js_code, height=100, key=key)
 
 # --- 1. THE COMPLETE WORD POOLS (450+ WORDS) ---
 # 3rd Grade Level (Exactly 50 words from the 3rd Grade PDF)
@@ -681,60 +677,54 @@ else:
         # --- BRANCH B: CHALLENGE MODE ---
         else:
             st.header("✍️ Spelling Challenge")
-            
-            # Use the audio variable defined earlier
             st.markdown(audio_html, unsafe_allow_html=True)
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
-            st.button("🔊 Repeat Word", key="repeat_btn")
-
-            # 1. Capture JS Component Value safely
-            try:
-                spoken_val = speech_to_text_js()
-            except Exception:
-                spoken_val = None
             
-            # 2. Persist the voice text in session state
-            if spoken_val and isinstance(spoken_val, str):
+            # Use a unique key for the button itself
+            st.button("🔊 Repeat Word", key=f"rep_{st.session_state.round}")
+
+            # 1. Capture JS Component with a GUARANTEED unique key
+            # This prevents the component from disappearing during reruns
+            unique_key = f"mic_component_r{st.session_state.round}_{current_word}"
+            spoken_val = speech_to_text_js(unique_key)
+            
+            # 2. Update session state only if we get a new string
+            if isinstance(spoken_val, str) and spoken_val.strip():
                 st.session_state.current_voice_ans = spoken_val
 
-            # 3. UI Display
+            # 3. Display current progress
             current_voice = st.session_state.get('current_voice_ans', "")
             if current_voice:
-                st.info(f"🎤 The Judge heard: **{current_voice}**")
-                if st.button("❌ Clear Voice"):
+                st.info(f"🎤 Heard: **{current_voice}**")
+                if st.button("❌ Clear Voice", key=f"clr_{st.session_state.round}"):
                     st.session_state.current_voice_ans = ""
                     st.rerun()
 
             # 4. Text Input
-            typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"ti_{st.session_state.round}").strip()
+            typed_ans = st.text_input("⌨️ Or Type Answer:", key=f"input_{st.session_state.round}").strip()
 
-            # 5. Final Answer Logic (Force to string)
-            final_user_ans = ""
-            if typed_ans:
-                final_user_ans = str(typed_ans)
-            elif current_voice:
-                final_user_ans = str(current_voice)
+            # 5. Resolve Final Answer
+            final_ans = str(typed_ans) if typed_ans else str(current_voice)
 
             # 6. Submission Logic
-            if st.button("Submit Spelling", key=f"sb_{st.session_state.round}"):
-                if final_user_ans:
+            if st.button("Submit Spelling", key=f"submit_{st.session_state.round}"):
+                if final_ans:
                     target = current_word.lower().strip().replace("*", "")
-                    # Clean everything for comparison
-                    processed = final_user_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
+                    processed = final_ans.lower().replace("-", "").replace(" ", "").replace(".", "")
                     
                     if target in processed:
                         st.success(f"Correct! The word was {target.upper()}")
                         st.session_state.score += 1
                     else:
-                        st.error(f"Incorrect. You provided: '{final_user_ans}'. Correct: {target.upper()}")
+                        st.error(f"Incorrect. You said: '{final_ans}'. Correct: {target.upper()}")
                         st.session_state.wrong_list.append(current_word)
                     
-                    # Clean up and move to next round
+                    # Reset voice and increment round
                     st.session_state.current_voice_ans = ""
                     st.session_state.round += 1
                     st.rerun()
                 else:
-                    st.warning("Please speak or type your answer.")
+                    st.warning("Please provide an answer (speak or type).")
 
     # --- SCREEN 3: RESULTS / SUMMARY ---
     else:
