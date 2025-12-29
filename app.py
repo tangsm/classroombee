@@ -593,10 +593,10 @@ if not st.session_state.game_active:
     if st.button("Start Session"):
         full_chunk = word_options[level]
         
-        # 1. Selection Logic: If Challenge mode, pick 20 random words
+        # 1. Selection Logic: If Challenge mode, pick 10 random words
         if mode == "Challenge (Test Mode)":
             # Ensure we don't try to pick more words than exist in the chunk
-            sample_size = min(20, len(full_chunk))
+            sample_size = min(10, len(full_chunk))
             st.session_state.current_pool = random.sample(full_chunk, sample_size)
         else:
             # Study mode keeps all 50 words in order
