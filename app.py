@@ -572,7 +572,7 @@ if not st.session_state.game_active:
     word_options = {}
     
     # 3rd Grade (usually 50 words already)
-    word_options["3rd Grade List"] = pool_3rd
+    word_options["3rd Grade List"] = POOL_3RD
     
     # One Bee Chunks
     for i, chunk in enumerate(chunks_one):
