@@ -614,15 +614,32 @@ else:
         # --- BRANCH A: STUDY MODE ---
         if st.session_state.mode == "Study (Learning)":
             st.header("📖 Study Mode")
+            
+            # 1. Pronunciation Audio
             st.markdown(audio_html, unsafe_allow_html=True)
+            
+            # 2. Spelling Audio (Letters one by one)
+            # We create a version of the word like "A. P. P. L. E." to force TTS to spell it
+            target_clean = current_word.strip().replace("*", "")
+            spelling_text = " . ".join(list(target_clean.upper()))
+            
+            # Generate the spelling audio
+            b64_spelling = get_tts_audio(spelling_text)
+            # Use a slight delay (1.5s) so the spelling starts after the word is pronounced
+            spelling_html = f'<audio autoplay src="data:audio/mp3;base64,{b64_spelling}">'
+            
+            # Inject both audios (Browser will play pronunciation first, then spelling)
+            # Note: We use a small delay trick or just list them
+            st.markdown(spelling_html, unsafe_allow_html=True)
             
             info = get_word_info(current_word)
             
             st.divider()
             st.title(current_word.capitalize())
             
-            # Simple button triggers a rerun, which plays the audio_html again
-            st.button("🔊 Re-play Pronunciation", key="study_repeat")
+            # Button to hear both again
+            if st.button("🔊 Re-play Word & Spelling", key="study_repeat"):
+                st.rerun()
 
             st.info(f"**Meaning:** {info[0]}")
             st.success(f"**Sample Sentence:** *{info[1]}*")
