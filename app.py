@@ -732,35 +732,59 @@ else:
                     st.warning("Please type the word before submitting.")
 
     # --- SCREEN 3: RESULTS / SUMMARY ---
-    else:
-        st.header("Session Complete!")
-        
-        if st.session_state.mode == "Challenge (Test)":
-            score = st.session_state.score
-            total = len(pool)
-            st.metric("Final Score", f"{score} / {total}")
+    elif not st.session_state.game_active and st.session_state.round > 0:
+        st.balloons()
+        st.title("🏁 Session Complete!")
+    
+        # 1. Calculate Score
+        total_words = len(st.session_state.current_pool)
+        score = st.session_state.score
+        # Avoid division by zero just in case
+        percentage = int((score / total_words) * 100) if total_words > 0 else 0
+    
+        # 2. Determine Message and Styling
+        if percentage == 100:
+            msg = "🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟"
+            st.success(msg)
+        elif percentage >= 80:
+            msg = "🎈 Amazing job! You've almost mastered this list! 🎈"
+            st.info(msg)
+        elif percentage >= 30:
+            msg = "👍 Good effort! Keep practicing and you'll get even higher next time."
+            st.warning(msg)
+        else:
+            msg = "💪 Don't give up! Every mistake is a chance to learn. Let's review the words below."
+            st.error(msg)
 
-            # Custom messages and effects based on score
-            if score == total:
-                st.snow()  # Or st.toast("PERFECT!")
-                st.balloons()
-                st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
-            elif score >= 16:
-                st.balloons()
-                st.success("🎈 Amazing job! You've almost mastered this list! 🎈")
-            elif score >= 5:
-                st.info("Good effort! Keep practicing and you'll get even higher next time.")
-            else:
-                st.warning("Don't give up! Every mistake is a chance to learn. Let's review the words below.")
-        
+        # 3. Display Stats in Columns
+        col1, col2 = st.columns(2)
+        col1.metric("Correct Answers", f"{score} / {total_words}")
+        col2.metric("Final Grade", f"{percentage}%")
+
+        st.divider()
+
+        # 4. Review Section
         if st.session_state.wrong_list:
-            st.subheader("Words to Review")
-            for w in st.session_state.wrong_list:
-                info = get_word_info(w)
-                with st.expander(f"Review: {w}"):
-                    st.write(f"**Meaning:** {info[0]}")
-                    st.write(f"**Example:** *{info[1]}*")
+            st.subheader("📝 Review Your Missed Words")
+            st.write("Take a moment to study these before your next try:")
         
+            # Using a set to ensure unique words, then sorting alphabetically
+            for word in sorted(set(st.session_state.wrong_list)):
+                # Fetch meaning and sentence from your existing function
+                meaning, sentence = get_word_info(word)
+            
+                with st.expander(f"📖 {word.upper()}", expanded=True):
+                    st.markdown(f"**Meaning:** {meaning}")
+                    st.markdown(f"**Example:** *{sentence}*")
+        else:
+            st.balloons()
+            st.success("Perfect! You didn't miss a single word. You're ready for the next level!")
+
+        # 5. Restart Button
         if st.button("Return to Main Menu"):
+            # Reset everything to go back to Screen 1
             st.session_state.game_active = False
+            st.session_state.round = 0
+            st.session_state.score = 0
+            st.session_state.wrong_list = []
             st.rerun()
