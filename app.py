@@ -697,9 +697,9 @@ elif not st.session_state.game_active and st.session_state.round > 0:
     percentage = int((score / total_words) * 100) if total_words > 0 else 0
     
     if percentage == 100:
-        st.success("🌟 PERFECT SCORE! 🌟")
+        st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
     elif percentage >= 80:
-        st.info("🎈 Amazing job! 🎈")
+        st.info("🎈 Amazing job! You've almost mastered this list! 🎈")
     else:
         st.error("💪 Keep practicing! Review below.")
 
