@@ -665,16 +665,19 @@ else:
         else:
             st.header("✍️ Spelling Challenge")
             
-            # 1. AUDIO LOGIC: Only play if we haven't submitted an answer yet
-            # We create a unique key for the audio based on the round
+            # 1. Create a placeholder for the audio
+            audio_placeholder = st.empty()
+            
+            # 2. Only put audio in the placeholder if NOT yet submitted
             if f"submitted_{st.session_state.round}" not in st.session_state:
-                st.markdown(audio_html, unsafe_allow_html=True)
+                with audio_placeholder:
+                    st.markdown(audio_html, unsafe_allow_html=True)
             
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
             
-            # Repeat Button (only show if not submitted)
-            if f"submitted_{st.session_state.round}" not in st.session_state:
-                st.button("🔊 Repeat Word", key=f"repeat_{st.session_state.round}")
+            # Repeat Button
+            if st.button("🔊 Repeat Word", key=f"rep_{st.session_state.round}"):
+                st.rerun()
 
             st.divider()
 
@@ -684,10 +687,13 @@ else:
                 key=f"input_{st.session_state.round}"
             ).strip()
 
-            # 4. Submission & Immediate Feedback
-            if st.button("Submit Spelling", key=f"submit_{st.session_state.round}", type="primary"):
+            # 4. Submission Logic
+            if st.button("Submit Spelling", key=f"sub_{st.session_state.round}", type="primary"):
                 if user_ans:
-                    # Mark as submitted to stop audio from re-playing on this rerun
+                    # IMMEDIATELY clear the audio placeholder
+                    audio_placeholder.empty()
+                    
+                    # Mark as submitted for this round
                     st.session_state[f"submitted_{st.session_state.round}"] = True
                     
                     target = current_word.lower().strip().replace("*", "")
@@ -696,13 +702,13 @@ else:
                     if processed_ans == target:
                         st.success(f"✅ Correct! **{target.upper()}**")
                         st.session_state.score += 1
-                        time.sleep(1.5) # Short pause to see success
+                        time.sleep(1.5)
                     else:
                         st.error(f"❌ Incorrect. The correct spelling is: **{target.upper()}**")
                         st.session_state.wrong_list.append(current_word)
-                        time.sleep(3.0) # Longer pause to study the correction
+                        time.sleep(3.0)
 
-                    # Move to next word
+                    # Move to next round
                     st.session_state.round += 1
                     st.rerun()
                 else:
