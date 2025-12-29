@@ -615,30 +615,32 @@ else:
         if st.session_state.mode == "Study (Learning)":
             st.header("📖 Study Mode")
             
-            # 1. Pronunciation Audio
-            st.markdown(audio_html, unsafe_allow_html=True)
-            
-            # 2. Spelling Audio (Letters one by one)
-            # We create a version of the word like "A. P. P. L. E." to force TTS to spell it
+            # 1. PREPARE THE TEXT: "Word... W. O. R. D... Word"
             target_clean = current_word.strip().replace("*", "")
-            spelling_text = " . ".join(list(target_clean.upper()))
+            spelling_letters = " . ".join(list(target_clean.upper()))
             
-            # Generate the spelling audio
-            b64_spelling = get_tts_audio(spelling_text)
-            # Use a slight delay (1.5s) so the spelling starts after the word is pronounced
-            spelling_html = f'<audio autoplay src="data:audio/mp3;base64,{b64_spelling}">'
+            # This creates a natural sequence: "Apple [pause] A. P. P. L. E. [pause] Apple"
+            combined_text = f"{target_clean}... {spelling_letters}... {target_clean}"
             
-            # Inject both audios (Browser will play pronunciation first, then spelling)
-            # Note: We use a small delay trick or just list them
-            st.markdown(spelling_html, unsafe_allow_html=True)
+            # 2. GENERATE SINGLE AUDIO CLIP
+            b64_combined = get_tts_audio(combined_text)
+            timestamp = time.time() 
             
+            # Single audio tag prevents overlapping/echo
+            combined_audio_html = f"""
+                <audio autoplay key="{timestamp}">
+                    <source src="data:audio/mp3;base64,{b64_combined}" type="audio/mp3">
+                </audio>
+            """
+            st.markdown(combined_audio_html, unsafe_allow_html=True)
+            
+            # 3. DISPLAY WORD INFO
             info = get_word_info(current_word)
             
             st.divider()
             st.title(current_word.capitalize())
             
-            # Button to hear both again
-            if st.button("🔊 Re-play Word & Spelling", key="study_repeat"):
+            if st.button("🔊 Re-play Word & Spelling", key=f"study_rep_{st.session_state.round}"):
                 st.rerun()
 
             st.info(f"**Meaning:** {info[0]}")
