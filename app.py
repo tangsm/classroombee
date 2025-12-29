@@ -67,6 +67,14 @@ POOL_THREE = [
         "silhouette", "piccolo", "cannelloni", "auxiliary", "thesaurus", "tulle", "bronchitis", "Charolais"
     ]
 
+def chunk_words(word_list, chunk_size=50):
+    return [word_list[i:i + chunk_size] for i in range(0, len(word_list), chunk_size)]
+
+# Assuming you have your full pools: pool_one, pool_two, pool_three
+chunks_one = chunk_words(pool_one)
+chunks_two = chunk_words(pool_two)
+chunks_three = chunk_words(pool_three)
+
 # --- 2. MASTER DICTIONARY ---
 # To avoid the "generic info" bug, every word above must map to a dictionary entry here.
 # Below is the logic that ensures the definitions are useful.
@@ -556,46 +564,42 @@ if 'game_active' not in st.session_state:
     st.session_state.current_pool = []
     st.session_state.mode = "Challenge (Test)"
 
-# --- SCREEN 1: SELECTION MENU ---
+# --- SCREEN 1: SETUP ---
 if not st.session_state.game_active:
-    st.header("🐝 Fun Spelling Bee Trainer")
-    st.subheader("Select Your Path")
+    st.title("🐝 Classroom Spelling Bee")
     
-    # Choose between testing and learning
-    mode_type = st.radio("Choose Activity:", ["Challenge (Test)", "Study (Learning)"])
+    # Create the mapping for the dropdown
+    word_options = {}
     
-    # Difficulty selection
-    level = st.selectbox("Select Word Pool:", [
-        "3rd Grader Classroom Bee", 
-        "School Bee: One Bee", 
-        "School Bee: Two Bee", 
-        "School Bee: Three Bee"
-    ])
+    # 3rd Grade (usually 50 words already)
+    word_options["3rd Grade List"] = pool_3rd
     
-    if st.button("Begin Session"):
-        # 1. Select the correct pool based on user choice
-        if "3rd Grader" in level:
-            selected_pool = POOL_3RD
-        elif "One Bee" in level:
-            selected_pool = POOL_ONE
-        elif "Two Bee" in level:
-            selected_pool = POOL_TWO
-        else:
-            selected_pool = POOL_THREE
-            
-        # 2. Set up the word list for this session
-        if mode_type == "Challenge (Test)":
-            # For testing, we take a random sample of 20
-            st.session_state.current_pool = random.sample(selected_pool, min(20, len(selected_pool)))
-        else:
-            # For study, we show the full list in order
-            st.session_state.current_pool = selected_pool
-            
-        st.session_state.mode = mode_type
+    # One Bee Chunks
+    for i, chunk in enumerate(chunks_one):
+        word_options[f"One Bee - Part {i+1}"] = chunk
+        
+    # Two Bee Chunks
+    for i, chunk in enumerate(chunks_two):
+        word_options[f"Two Bee - Part {i+1}"] = chunk
+        
+    # Three Bee Chunks
+    for i, chunk in enumerate(chunks_three):
+        word_options[f"Three Bee - Part {i+1}"] = chunk
+
+    # Setup UI
+    mode = st.radio("Choose Mode:", ["Study (Learning)", "Challenge (Test Mode)"])
+    level = st.selectbox("Select Word Set:", list(word_options.keys()))
+    
+    if st.button("Start Session"):
+        st.session_state.current_pool = word_options[level]
+        st.session_state.mode = mode
         st.session_state.game_active = True
         st.session_state.round = 0
         st.session_state.score = 0
         st.session_state.wrong_list = []
+        # Clear any old submitted flags
+        keys_to_clear = [k for k in st.session_state.keys() if k.startswith("submitted_")]
+        for k in keys_to_clear: del st.session_state[k]
         st.rerun()
 
 # --- SCREEN 2: ACTIVE SESSION ---
