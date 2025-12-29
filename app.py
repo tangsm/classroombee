@@ -585,7 +585,7 @@ if not st.session_state.game_active and st.session_state.round == 0:
         full_chunk = word_options[level]
         
         if mode == "Challenge (Test Mode)":
-            sample_size = min(20, len(full_chunk))
+            sample_size = min(10, len(full_chunk))
             st.session_state.current_pool = random.sample(full_chunk, sample_size)
         else:
             st.session_state.current_pool = full_chunk
