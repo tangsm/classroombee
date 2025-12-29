@@ -591,15 +591,28 @@ if not st.session_state.game_active:
     level = st.selectbox("Select Word Set:", list(word_options.keys()))
     
     if st.button("Start Session"):
-        st.session_state.current_pool = word_options[level]
+        full_chunk = word_options[level]
+        
+        # 1. Selection Logic: If Challenge mode, pick 20 random words
+        if mode == "Challenge (Test Mode)":
+            # Ensure we don't try to pick more words than exist in the chunk
+            sample_size = min(20, len(full_chunk))
+            st.session_state.current_pool = random.sample(full_chunk, sample_size)
+        else:
+            # Study mode keeps all 50 words in order
+            st.session_state.current_pool = full_chunk
+            
         st.session_state.mode = mode
         st.session_state.game_active = True
         st.session_state.round = 0
         st.session_state.score = 0
         st.session_state.wrong_list = []
-        # Clear any old submitted flags
+        
+        # Cleanup audio flags from previous runs
         keys_to_clear = [k for k in st.session_state.keys() if k.startswith("submitted_")]
-        for k in keys_to_clear: del st.session_state[k]
+        for k in keys_to_clear: 
+            del st.session_state[k]
+            
         st.rerun()
 
 # --- SCREEN 2: ACTIVE SESSION ---
