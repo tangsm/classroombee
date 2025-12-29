@@ -71,9 +71,9 @@ def chunk_words(word_list, chunk_size=50):
     return [word_list[i:i + chunk_size] for i in range(0, len(word_list), chunk_size)]
 
 # Assuming you have your full pools: pool_one, pool_two, pool_three
-chunks_one = chunk_words(pool_one)
-chunks_two = chunk_words(pool_two)
-chunks_three = chunk_words(pool_three)
+chunks_one = chunk_words(POOL_ONE)
+chunks_two = chunk_words(POOL_TWO)
+chunks_three = chunk_words(POOL_THREE)
 
 # --- 2. MASTER DICTIONARY ---
 # To avoid the "generic info" bug, every word above must map to a dictionary entry here.
