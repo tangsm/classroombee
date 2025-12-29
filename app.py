@@ -665,12 +665,16 @@ else:
         else:
             st.header("✍️ Spelling Challenge")
             
-            # 1. Audio Playback
-            st.markdown(audio_html, unsafe_allow_html=True)
+            # 1. AUDIO LOGIC: Only play if we haven't submitted an answer yet
+            # We create a unique key for the audio based on the round
+            if f"submitted_{st.session_state.round}" not in st.session_state:
+                st.markdown(audio_html, unsafe_allow_html=True)
+            
             st.write(f"Word {st.session_state.round + 1} of {len(pool)}")
             
-            # 2. Repeat Button
-            st.button("🔊 Repeat Word", key=f"repeat_{st.session_state.round}")
+            # Repeat Button (only show if not submitted)
+            if f"submitted_{st.session_state.round}" not in st.session_state:
+                st.button("🔊 Repeat Word", key=f"repeat_{st.session_state.round}")
 
             st.divider()
 
@@ -683,20 +687,20 @@ else:
             # 4. Submission & Immediate Feedback
             if st.button("Submit Spelling", key=f"submit_{st.session_state.round}", type="primary"):
                 if user_ans:
+                    # Mark as submitted to stop audio from re-playing on this rerun
+                    st.session_state[f"submitted_{st.session_state.round}"] = True
+                    
                     target = current_word.lower().strip().replace("*", "")
                     processed_ans = user_ans.lower().replace("-", "").replace(" ", "")
                     
                     if processed_ans == target:
                         st.success(f"✅ Correct! **{target.upper()}**")
                         st.session_state.score += 1
-                        # Short pause so they can see the success message
-                        time.sleep(1) 
+                        time.sleep(1.5) # Short pause to see success
                     else:
-                        # SHOW CORRECT ANSWER IMMEDIATELY
                         st.error(f"❌ Incorrect. The correct spelling is: **{target.upper()}**")
                         st.session_state.wrong_list.append(current_word)
-                        # Longer pause so they can study the correct spelling before it disappears
-                        time.sleep(3) 
+                        time.sleep(3.0) # Longer pause to study the correction
 
                     # Move to next word
                     st.session_state.round += 1
