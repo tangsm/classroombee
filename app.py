@@ -566,7 +566,7 @@ if 'game_active' not in st.session_state:
 
 # --- SCREEN 1: SETUP ---
 if not st.session_state.game_active:
-    st.title("🐝 Classroom Spelling Bee")
+    st.title("🐝 Fun Spelling Bee Trainer")
     
     # Create the mapping for the dropdown
     word_options = {}
