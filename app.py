@@ -39,41 +39,42 @@ POOL_ONE = [
 
 # Two Bee & Three Bee Pools 
 POOL_TWO = [
-        "hesitate", "scorcher", "scavenger", "fragments", "deflated", "unleash", "ration", "cosmetics", "crawdad", 
-        "frustration", "unruly", "mascot", "aroma", "moustache", "artifacts", "buffalo", "sequins", "gallop", "fabulous", "lanky", 
-        "fluently", "mysterious", "brandished", "sardines", "anguish", "conical", "rickety", "lilt", "pediatric", 
-        "porridge", "democracy", "rummage", "beige", "ancestral", "grimace", "gaunt", "enormous", "geranium", 
-        "nautical", "dubious", "ebony", "foreign", "paltry", "verdict", "garbled", "encourages", "imitation", 
-        "miniature", "receptionist", "preamble", "plausible", "reprimanding", "commotion", "oblivion", "immigrants", 
-        "steeple", "spectators", "lanyards", "suspicious", "parchment", "ramshackle", "fugitive", "heron", "dissolving", 
-        "nomad", "billowed", "skewer", "berlin", "lunacy", "conjure", "bracken", "noggin", "neon", "rakish", "hypnosis", 
-        "rotunda", "gusto", "toiletries", "gleaned", "jeered", "winsome", "prattling", "galore", "emporium", "atrium", 
-        "eccentric", "savant", "almanac", "talcum", "hippies", "samosas", "tranquilizer", "equestrian", "chignon", 
-        "pheromone", "campaign", "plaited", "galleon", "magnanimous", "pistachio", "monsieur", "chartreuse", "mosque", 
-        "manticores", "wainscoting", "prestigious", "nehru", "warlock", "fraidycat", "colossus", "guttural", 
-        "convulsively", "courier", "garishly", "psyche", "everest", "stucco", "dexterity", "frankenstein", "cavorting", 
-        "schema", "marauder", "conscience", "vidimus", "battlements", "delphine", "deferential", "slough", "albatross", 
-        "archipelago", "khaki", "serape", "opalescent", "asphalt", "puissance", "pinioning"
-    ]
+    "hesitate", "scorcher", "scavenger", "fragments", "deflated", "unleash", "ration", "cosmetics", "crawdad", 
+    "frustration", "unruly", "mascot", "aroma", "moustache", "artifacts", "perfume", "sinister", "tuxedo", 
+    "discoveries", "lurches", "language", "prognosis", "buffalo", "sequins", "gallop", "fabulous", "lanky", 
+    "fluently", "mysterious", "brandished", "sardines", "anguish", "conical", "rickety", "lilt", "pediatric", 
+    "porridge", "democracy", "rummage", "beige", "ancestral", "grimace", "gaunt", "enormous", "geranium", 
+    "nautical", "dubious", "ebony", "foreign", "paltry", "verdict", "garbled", "encourages", "imitation", 
+    "miniature", "receptionist", "preamble", "plausible", "reprimanding", "commotion", "oblivion", "immigrants", 
+    "steeple", "spectators", "lanyards", "suspicious", "parchment", "ramshackle", "fugitive", "heron", "dissolving", 
+    "nomad", "billowed", "skewer", "berlin", "lunacy", "conjure", "bracken", "noggin", "neon", "rakish", "hypnosis", 
+    "rotunda", "gusto", "toiletries", "gleaned", "jeered", "winsome", "prattling", "galore", "emporium", "atrium", 
+    "eccentric", "savant", "almanac", "hippies", "samosas", "campaign", "pistachio", "mosque", "zombielike", 
+    "warlock", "colossus", "convulsively", "dimensional", "garishly", "graffitist", "everest", "dexterity", 
+    "cavorting", "marauder", "conscience", "battlements", "deferential", "albatross", "khaki", "opalescent", 
+    "asphalt", "yiddish", "talcum", "tranquilizer", "equestrian", "plaited", "monsieur", "manticores", 
+    "prestigious", "fraidycat", "guttural", "lo mein", "courier", "sans serif", "psyche", "stucco", 
+    "frankenstein", "schema", "et cetera", "vidimus", "delphine", "slough", "archipelago", "serape", 
+    "puissance", "pinioning", "chignon", "pheromone", "galleon", "magnanimous", "chartreuse", "wainscoting", "nehru"
+]
 
 POOL_THREE = [
-        "gangly", "comrades", "ultimatum", "swaggering", "sporadic", "whinnying", "prototype", "cravenly", "chimneys", 
-        "promenade", "squalor", "mulberry", "riveted", "repugnant", "memoirs", "hypocritical", "plaid", "invincible", 
-        "cylinders", "chlorine", "dirge", "renowned", "ominous", "traumatic", "zeal", "parachute", "muffler", "receipts", 
-        "whittled", "laborious", "syndrome", "solemnly", "depots", "appointment", "premises", "begrudge", "fiberglass", 
-        "foreseeable", "safari", "contentious", "salvaged", "ratify", "lasagna", "precocious", "fissures", "scalpel", 
-        "substantially", "ensemble", "enthusiastic", "reclusive", "mercantile", "cadre", "discipline", "compassionate", 
-        "formidable", "lye", "unfamiliar", "bulletin", "propaganda", "belfry", "scurrying", "alfalfa", "marquee", 
-        "lacrosse", "dignitaries", "officially", "proficient", "sluice", "pizzeria", "crematorium", "compunction", 
-        "cajolery", "dismissal", "bayonet", "emphatically", "vigilance", "skittish", "amicable", "hyperventilated", 
-        "residuals", "careened", "exuberant", "ostracism", "boutique", "nomination", "beautician", "onslaught", 
-        "peroxide", "opportunist", "equations", "ruefully", "aristocracy", "dictatorship", "assignment", "misanthrope", 
-        "apocalypse", "tuberculosis", "patriarchs", "barricade", "chandelier", "camphor", "confreres", "dulce", "tucson", 
-        "oswego", "diphtheria", "baklava", "anonymously", "concierge", "paparazzi", "corbels", "unparalleled", 
-        "latticework", "pumpernickel", "trebuchets", "barrette", "hibiscus", "pogrom", "kilimanjaro", "chassis", "tamale", 
-        "bursitis", "junket", "maracas", "protégé", "quandary", "gyroplane", "cycads", "gingham", "adriatic", 
-        "silhouette", "piccolo", "cannelloni", "auxiliary", "thesaurus", "tulle", "bronchitis", "Charolais"
-    ]
+    "gangly", "swaggering", "chimneys", "riveted", "plaid", "dirge", "zeal", "whittled", "depots", "fiberglass", 
+    "salvaged", "fissures", "enthusiastic", "discipline", "unfamiliar", "scurrying", "dignitaries", "pizzeria", "dismissal", "skittish", 
+    "careened", "nomination", "opportunist", "dictatorship", "comrades", "sporadic", "promenade", "repugnant", "invincible", "renowned", 
+    "parachute", "laborious", "appointment", "foreseeable", "ratify", "scalpel", "reclusive", "compassionate", "bulletin", "alfalfa", 
+    "officially", "crematorium", "bayonet", "amicable", "exuberant", "beautician", "equations", "assignment", "ultimatum", "whinnying", 
+    "squalor", "memoirs", "cylinders", "ominous", "muffler", "syndrome", "premises", "safari", "lasagna", "substantially", 
+    "mercantile", "formidable", "propaganda", "marquee", "proficient", "compunction", "emphatically", "hyperventilated", "ostracism", "onslaught", 
+    "ruefully", "misanthrope", "prototype", "cravenly", "mulberry", "hypocritical", "chlorine", "traumatic", "receipts", "solemnly", 
+    "begrudge", "contentious", "precocious", "ensemble", "cadre", "lye", "belfry", "lacrosse", "sluice", "cajolery", 
+    "vigilance", "residuals", "boutique", "peroxide", "aristocracy", "apocalypse", "tuberculosis", "barricade", "confreres", "anonymously", 
+    "unparalleled", "barrette", "chassis", "junket", "quandary", "Erie", "gingham", "silhouette", "auxiliary", "thesaurus", 
+    "patriarchs", "chandelier", "dulce", "concierge", "latticework", "hibiscus", "tamale", "maracas", "gyroplane", "burpees", 
+    "Adriatic", "piccolo", "au revoir", "tulle", "boll weevil", "camphor", "Tucson", "paparazzi", "pumpernickel", "pogrom", 
+    "bursitis", "pâtisserie", "cycads", "sarsaparilla", "maître d'", "cannelloni", "boulangerie", "bronchitis", "Oswego", "diphtheria", 
+    "baklava", "corbels", "trebuchets", "Kilimanjaro", "fräulein", "protégé", "hors d'oeuvres", "maquisards", "Aubusson", "Charolais"
+]
 
 def chunk_words(word_list, chunk_size=50):
     return [word_list[i:i + chunk_size] for i in range(0, len(word_list), chunk_size)]
@@ -586,7 +587,35 @@ WORD_DATA = {
     "valentine": ["A card or gift sent to a person one loves on February 14th.", "I made a special valentine for my best friend."],
     "February": ["The second month of the year.", "Groundhog Day is celebrated on the second day of February."],
     "formation": ["The action of forming or a structure that has been formed.", "The birds flew in a perfect V-formation across the sky."],
-    "especially": ["Used to single out one person, thing, or situation over all others.", "I love all fruit, but I especially like strawberries."]
+    "especially": ["Used to single out one person, thing, or situation over all others.", "I love all fruit, but I especially like strawberries."],
+
+    "dimensional": ["Relating to measurements of extension in a particular direction (like height or width).", "The 3D movie made the characters look truly three-dimensional."],
+    "discoveries": ["The act of finding or learning something for the first time.", "The scientist shared her latest discoveries about deep-sea life."],
+    "et cetera": ["A Latin phrase meaning 'and others' or 'and so forth'.", "We need to pack snacks, water, sunscreen, et cetera, for our hike."],
+    "graffitist": ["A person who writes or draws on walls or surfaces in public places.", "The talented graffitist painted a colorful mural on the old brick wall."],
+    "language": ["A system of communication used by a particular country or community.", "Learning a second language can help you talk to people all over the world."],
+    "lo mein": ["A Chinese dish made of boiled noodles, vegetables, and often meat or seafood.", "We ordered vegetable lo mein and spring rolls for dinner."],
+    "lurches": ["Making abrupt, unsteady, or uncontrolled movements.", "The bus lurches forward every time it starts moving after a stop."],
+    "perfume": ["A fragrant liquid typically made from essential oils extracted from flowers.", "The room was filled with the sweet scent of her floral perfume."],
+    "prognosis": ["A forecast of the likely course of a disease or situation.", "After the checkup, the doctor gave a positive prognosis for his recovery."],
+    "sans serif": ["A style of type or font that does not have small features (serifs) at the ends of strokes.", "Most modern websites use a clean sans serif font for easier reading."],
+    "sinister": ["Giving the impression that something harmful or evil is happening or will happen.", "The old abandoned house looked quite sinister in the moonlight."],
+    "tuxedo": ["A man's formal suit, typically black or dark blue, worn with a bow tie.", "He looked very sharp wearing a tuxedo to the charity gala."],
+    "yiddish": ["A language used by Jews in central and eastern Europe before the Holocaust.", "My grandmother occasionally used Yiddish words like 'schlep' or 'mensch'."],
+    "zombielike": ["Resembling a person who is very tired, unresponsive, or moving mechanically.", "After studying all night, the students walked to class in a zombielike state."],
+
+    "erie": ["One of the five Great Lakes of North America, located on the border between Canada and the U.S.", "The shallowest of the Great Lakes is Lake Erie."],
+    "burpees": ["A physical exercise consisting of a squat thrust with an additional stand-up or jump between repetitions.", "We had to do twenty burpees as part of our morning gym circuit."],
+    "au revoir": ["A French phrase used for 'goodbye' or 'until we meet again'.", "She waved and said 'Au revoir!' as she boarded the train to Paris."],
+    "boll weevil": ["A beetle which feeds on the cotton buds and flowers, often destructive to crops.", "The boll weevil caused a major crisis for cotton farmers in the early 1900s."],
+    "pâtisserie": ["A type of French or Belgian bakery that specializes in pastries and sweets.", "The window of the pâtisserie was filled with colorful macarons and eclairs."],
+    "sarsaparilla": ["A carbonated soft drink originally made from the roots of a tropical climbing plant.", "The cowboy ordered a cold bottle of sarsaparilla at the saloon."],
+    "maître d'": ["The headwaiter of a restaurant who manages reservations and seats guests.", "The maître d' led us to a quiet table near the window."],
+    "boulangerie": ["A French bakery that specializes in baking and selling bread.", "The smell of fresh baguettes drifted out of the boulangerie every morning."],
+    "fräulein": ["A German title or form of address for an unmarried woman.", "The children politely addressed their new tutor as 'Fräulein'."],
+    "hors d'oeuvres": ["Small savory dishes served as appetizers before a main meal.", "Waiters circulated through the room carrying trays of delicious hors d'oeuvres."],
+    "maquisards": ["Members of the French Resistance who hid in the countryside during World War II.", "The maquisards operated from secret camps in the mountains to sabotage the enemy."],
+    "aubusson": ["A fine hand-woven tapestry or carpet made in a specific town in central France.", "The palace floor was covered with a magnificent, antique Aubusson rug."]
 }
 
 # --- 2. UPDATED GET INFO FUNCTION (THE KEY FIX) ---
