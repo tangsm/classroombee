@@ -643,7 +643,7 @@ if not st.session_state.game_active and st.session_state.round == 0:
     # Updated Mode Selection in Screen 1
     mode = st.radio("Choose Mode:", [
         "Study (Learning)", 
-        "Challenge (10 Words)", 
+        "Challenge (Test Mode)", 
         "Full Test (Every Word)"
     ])
     level = st.selectbox("Select Word Set:", list(word_options.keys()))
