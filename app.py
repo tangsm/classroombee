@@ -640,15 +640,30 @@ if not st.session_state.game_active and st.session_state.round == 0:
     for i, chunk in enumerate(chunks_three):
         word_options[f"Three Bee - Part {i+1}"] = chunk
 
-    mode = st.radio("Choose Mode:", ["Study (Learning)", "Challenge (Test Mode)"])
+    # Updated Mode Selection in Screen 1
+    mode = st.radio("Choose Mode:", [
+        "Study (Learning)", 
+        "Challenge (10-20 Words)", 
+        "Full Test (Every Word)"
+    ])
     level = st.selectbox("Select Word Set:", list(word_options.keys()))
     
     if st.button("Start Session"):
         full_chunk = word_options[level]
         
+        # 1. CHALLENGE MODE (Random subset of 10-20)
         if mode == "Challenge (Test Mode)":
             sample_size = min(10, len(full_chunk))
             st.session_state.current_pool = random.sample(full_chunk, sample_size)
+            
+        # 2. FULL TEST (Every word, but randomized order)
+        elif mode == "Full Test (Every Word)":
+            # Create a copy and shuffle it
+            test_pool = list(full_chunk)
+            random.shuffle(test_pool)
+            st.session_state.current_pool = test_pool
+            
+        # 3. STUDY MODE (Every word in original order)
         else:
             st.session_state.current_pool = full_chunk
             
@@ -758,7 +773,11 @@ elif not st.session_state.game_active and st.session_state.round > 0:
     percentage = int((score / total_words) * 100) if total_words > 0 else 0
     
     # 1. Determine Message and Visual Effects based on score
-    if percentage == 100:
+    # Inside Screen 3 Logic
+    if percentage == 100 and st.session_state.mode == "Full Test (Every Word)":
+        st.balloons()
+        st.success(f"🏆 ULTIMATE CHAMPION! You mastered all {total_words} words in this section! 🏆")
+    elif percentage == 100:
         st.balloons()  # Only triggers for 100%
         st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
     elif percentage >= 80:
