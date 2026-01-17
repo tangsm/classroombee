@@ -643,7 +643,7 @@ if not st.session_state.game_active and st.session_state.round == 0:
     # Updated Mode Selection in Screen 1
     mode = st.radio("Choose Mode:", [
         "Study (Learning)", 
-        "Challenge (10-20 Words)", 
+        "Challenge (10 Words)", 
         "Full Test (Every Word)"
     ])
     level = st.selectbox("Select Word Set:", list(word_options.keys()))
@@ -651,22 +651,23 @@ if not st.session_state.game_active and st.session_state.round == 0:
     if st.button("Start Session"):
         full_chunk = word_options[level]
         
-        # 1. CHALLENGE MODE (Random subset of 10-20)
+        # 1. CHALLENGE MODE: Pull exactly 10 words
         if mode == "Challenge (Test Mode)":
-            sample_size = min(10, len(full_chunk))
+            # Change this number to 10 if you want exactly 10 words
+            sample_size = min(10, len(full_chunk)) 
             st.session_state.current_pool = random.sample(full_chunk, sample_size)
             
-        # 2. FULL TEST (Every word, but randomized order)
+        # 2. FULL TEST: Keep all 50, but randomize the order
         elif mode == "Full Test (Every Word)":
-            # Create a copy and shuffle it
             test_pool = list(full_chunk)
             random.shuffle(test_pool)
             st.session_state.current_pool = test_pool
             
-        # 3. STUDY MODE (Every word in original order)
+        # 3. STUDY MODE: Keep all 50 in original order
         else:
             st.session_state.current_pool = full_chunk
             
+        # Common Session Initialization
         st.session_state.mode = mode
         st.session_state.game_active = True
         st.session_state.round = 0
