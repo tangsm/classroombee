@@ -768,50 +768,78 @@ elif st.session_state.game_active:
 elif not st.session_state.game_active and st.session_state.round > 0:
     st.title("🏁 Session Complete!")
     
-    total_words = len(st.session_state.current_pool)
-    score = st.session_state.score
-    percentage = int((score / total_words) * 100) if total_words > 0 else 0
-    
-    # 1. Determine Message and Visual Effects based on score
-    # Inside Screen 3 Logic
-    if percentage == 100 and st.session_state.mode == "Full Test (Every Word)":
+    # 1. SPECIAL LOGIC FOR STUDY MODE
+    if st.session_state.mode == "Study (Learning)":
         st.balloons()
-        st.success(f"🏆 ULTIMATE CHAMPION! You mastered all {total_words} words in this section! 🏆")
-    elif percentage == 100:
-        st.balloons()  # Only triggers for 100%
-        st.success("🌟 PERFECT SCORE! You are a Spelling Bee Champion! 🌟")
-    elif percentage >= 80:
-        st.snow()      # A different effect for high scores
-        st.info("🎈 Amazing job! You've almost mastered this list! 🎈")
-    elif percentage >= 30:
-        st.warning("👍 Good effort! Keep practicing and you'll get even higher next time.")
+        st.success("🎊 Great job on completing your study session! 🎊")
+        st.info("You've reviewed the entire list. Your hard work and dedication will pay off in the next challenge!")
+        
+        st.subheader("📖 Words You Reviewed Today:")
+        reviewed_words = [w.capitalize() for w in st.session_state.current_pool]
+        st.write(", ".join(reviewed_words))
+
+    # 2. LOGIC FOR CHALLENGE / FULL TEST MODES
     else:
-        st.error("💪 Don't give up! Every mistake is a chance to learn. Review below.")
+        total_words = len(st.session_state.current_pool)
+        score = st.session_state.score
+        percentage = int((score / total_words) * 100) if total_words > 0 else 0
+        
+        # Scoring Messages & Visual Effects
+        if percentage == 100 and st.session_state.mode == "Full Test (Every Word)":
+            st.balloons()
+            st.success(f"🏆 ULTIMATE CHAMPION! You mastered all {total_words} words in this section! 🏆")
+        elif percentage == 100:
+            st.balloons()
+            st.success("🌟 PERFECT SCORE! 🌟")
+        elif percentage >= 80:
+            st.snow()
+            st.info("🎈 Amazing job! You've almost mastered this list! 🎈")
+        elif percentage >= 30:
+            st.warning("👍 Good effort! Keep practicing and you'll get even higher next time.")
+        else:
+            st.error("💪 Don't give up! Every mistake is a chance to learn. Review below.")
 
-    # 2. Display Stats
-    col1, col2 = st.columns(2)
-    col1.metric("Correct Answers", f"{score} / {total_words}")
-    col2.metric("Final Grade", f"{percentage}%")
+        # Display Metrics
+        col1, col2 = st.columns(2)
+        col1.metric("Correct Answers", f"{score} / {total_words}")
+        col2.metric("Final Grade", f"{percentage}%")
 
-    st.divider()
+        st.divider()
 
-    # 3. Review Section
-    if st.session_state.wrong_list:
-        st.subheader("📝 Review Your Missed Words")
-        for word in sorted(set(st.session_state.wrong_list)):
-            meaning, sentence = get_word_info(word)
-            with st.expander(f"📖 {word.upper()}", expanded=True):
-                st.markdown(f"**Meaning:** {meaning}")
-                st.markdown(f"**Example:** *{sentence}*")
+        # Review Section for Test Failures
+        if st.session_state.wrong_list:
+            st.subheader("📝 Review Your Missed Words")
+            for word in sorted(set(st.session_state.wrong_list)):
+                meaning, sentence = get_word_info(word)
+                with st.expander(f"📖 {word.upper()}", expanded=True):
+                    st.markdown(f"**Meaning:** {meaning}")
+                    st.markdown(f"**Example:** *{sentence}*")
+
+    # 3. Navigation Buttons
+    col_back, col_again = st.columns(2)
+    with col_back:
+        if st.button("🏠 Return to Main Menu"):
+            st.session_state.game_active = False
+            st.session_state.round = 0
+            st.session_state.score = 0
+            st.session_state.wrong_list = []
+            # Cleanup audio flags
+            for k in list(st.session_state.keys()):
+                if k.startswith("submitted_"):
+                    del st.session_state[k]
+            st.rerun()
     
-    # 4. Restart Button
-    if st.button("Return to Main Menu"):
-        st.session_state.game_active = False
-        st.session_state.round = 0
-        st.session_state.score = 0
-        st.session_state.wrong_list = []
-        # Cleanup audio flags
-        for k in list(st.session_state.keys()):
-            if k.startswith("submitted_"):
-                del st.session_state[k]
-        st.rerun()
+    with col_again:
+        if st.button("🔄 Try This Set Again"):
+            st.session_state.round = 0
+            st.session_state.score = 0
+            st.session_state.wrong_list = []
+            st.session_state.game_active = True
+            # Re-shuffle if it was a randomized mode
+            if "Test" in st.session_state.mode:
+                random.shuffle(st.session_state.current_pool)
+            # Cleanup flags
+            for k in list(st.session_state.keys()):
+                if k.startswith("submitted_"):
+                    del st.session_state[k]
+            st.rerun()
